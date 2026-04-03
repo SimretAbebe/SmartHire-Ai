@@ -216,6 +216,22 @@ export function RegistrationForm({ role, onBack }) {
                 </div>
               </div>
 
+              {role === "helper" && (
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    {t("registration.age")}
+                  </label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                    <Input
+                      type="number"
+                      placeholder={t("registration.agePlaceholder")}
+                      className="pl-11 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:ring-emerald-500/20 h-12"
+                    />
+                  </div>
+                </div>
+              )}
+
               {role !== "helper" && (
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-2">
