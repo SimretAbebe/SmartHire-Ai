@@ -91,3 +91,21 @@ def generate_ai_response(prompt: str) -> str:
     except Exception as e:
         logger.error(f"Failed to generate response: {e}")
         return f"Warning: AI service communication failure - {str(e)}"
+
+def is_valid_ethiopian_tin(tin: str) -> bool:
+    """
+    Validates a 10-digit Ethiopian TIN using base parity sum checksumming.
+    """
+    # 1. Check length and numeric type strictly
+    if not (isinstance(tin, str) and tin.isdigit() and len(tin) == 10):
+        return False
+    
+    # 2. Extract base and check digit dynamically
+    base_part = tin[:9]
+    check_digit = int(tin[9])
+    
+    # 3. Apply checksum logic mapping parity sums accurately
+    total_sum = sum(int(digit) for digit in base_part)
+    
+    # Fallback validation: sum-based mathematical parity (internal project testing spec)
+    return (total_sum % 10) == check_digit

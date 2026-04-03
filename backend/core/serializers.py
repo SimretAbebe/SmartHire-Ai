@@ -8,10 +8,37 @@ User = get_user_model()
 class RegisterSerializer(serializers.ModelSerializer):
     # Write only ensures password is never exposed in responses!
     password = serializers.CharField(write_only=True)
+    
+    # Safely allow these from arbitrary payloads natively if role != agent
+    fayda_id = serializers.CharField(required=False, allow_blank=True)
+    tin_number = serializers.CharField(required=False, allow_blank=True)
 
     class Meta:
         model = User
-        fields = ('name', 'phone', 'password', 'role')
+        fields = ('name', 'phone', 'password', 'role', 'fayda_id', 'tin_number')
+
+    def validate(self, data):
+        role = data.get('role')
+        
+        # Branch validation logic securely requiring explicitly provided fields exclusively for Agents
+        if role == 'agent':
+            fayda_id = data.get('fayda_id')
+            tin_number = data.get('tin_number')
+            
+            if not fayda_id or not tin_number:
+                raise serializers.ValidationError({"error": "Agents must explicitly provide both Fayda ID and TIN number to sign up."})
+                
+            from .utils import validate_fayda_id, is_valid_ethiopian_tin
+            
+            # Utilize Verhoeff verification securely
+            if not validate_fayda_id(fayda_id):
+                raise serializers.ValidationError({"fayda_id": "Invalid Fayda ID provided."})
+                
+            # Utilize the mathematical parity checksum
+            if not is_valid_ethiopian_tin(tin_number):
+                raise serializers.ValidationError({"tin_number": "Invalid TIN number provided."})
+                
+        return data
 
     def create(self, validated_data):
         # We explicitly use create_user here to hash the password securely 
@@ -19,7 +46,9 @@ class RegisterSerializer(serializers.ModelSerializer):
             phone=validated_data['phone'],
             name=validated_data['name'],
             password=validated_data['password'],
-            role=validated_data['role']
+            role=validated_data['role'],
+            fayda_id=validated_data.get('fayda_id'),
+            tin_number=validated_data.get('tin_number')
         )
         return user
 
