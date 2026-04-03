@@ -88,9 +88,9 @@ export function RegistrationForm({ role, onBack }) {
     setIsLoadingMatches(true);
     setTimeout(() => {
       setMatches([
-        { id: 1, name: "Aster T.", experience: "5 years experience", location: "Addis Ababa", match: 98, verified: true, skills: ["Cleaning", "Cooking", "Childcare"], image: "https://images.unsplash.com/photo-1523824275624-862ad8ef345b?w=400&q=80" },
-        { id: 2, name: "Mekdes A.", experience: "3 years experience", location: "Addis Ababa", match: 92, verified: true, skills: ["Cleaning", "Laundry"], image: "https://images.unsplash.com/photo-1616422325375-9270e599e1ee?w=400&q=80" },
-        { id: 3, name: "Helen B.", experience: "2 years experience", location: "Bahir Dar", match: 85, verified: false, skills: ["Cooking", "Elderly Care"], image: "https://images.unsplash.com/photo-1548175510-44026600c0f8?w=400&q=80" }
+        { id: 1, name: "Aster T.", age: 24, experience: "5 years experience", location: "Addis Ababa", match: 98, verified: true, skills: ["Cleaning", "Cooking", "Childcare"], image: "/images/profiles/aster.png" },
+        { id: 2, name: "Mekdes A.", age: 27, experience: "3 years experience", location: "Addis Ababa", match: 92, verified: true, skills: ["Cleaning", "Laundry"], image: "/images/profiles/mekdes.png" },
+        { id: 3, name: "Helen B.", age: 22, experience: "2 years experience", location: "Bahir Dar", match: 85, verified: false, skills: ["Cooking", "Elderly Care"], image: "/images/profiles/helen.png" }
       ]);
       setIsLoadingMatches(false);
     }, 1500);
@@ -565,6 +565,7 @@ export function RegistrationForm({ role, onBack }) {
                         <div>
                           <h4 className="text-lg font-bold text-white mb-1">{match.name}</h4>
                           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-400 mb-3">
+                            <span className="flex items-center gap-1.5"><User className="w-4 h-4" /> {match.age} years old</span>
                             <span className="flex items-center gap-1.5"><Briefcase className="w-4 h-4" /> {match.experience}</span>
                             <span className="flex items-center gap-1.5"><MapPin className="w-4 h-4" /> {match.location}</span>
                           </div>
