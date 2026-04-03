@@ -1,11 +1,17 @@
 from django.urls import path
-from .views import RegisterView, LoginView, MaidProfileView
+from .views import RegisterView, LoginView, MaidProfileView, JobPostingView, JobPostingDetailView
 
 urlpatterns = [
     # Mapped natively to /api/register due to backend urls binding
     path('register', RegisterView.as_view(), name='register'),
     # Mapped natively to /api/login
     path('login', LoginView.as_view(), name='login'),
-    # Maid Endpoint processing POST
+    
+    # POST /api/maid-profile
     path('maid-profile', MaidProfileView.as_view(), name='maid-profile'),
+    
+    # POST /api/job
+    path('job', JobPostingView.as_view(), name='job'),
+    # GET /api/job/<id>
+    path('job/<int:pk>', JobPostingDetailView.as_view(), name='job-detail'),
 ]
