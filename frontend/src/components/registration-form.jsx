@@ -46,9 +46,9 @@ export function RegistrationForm({ role, onBack }) {
     setIsLoadingMatches(true);
     setTimeout(() => {
       setMatches([
-        { id: 1, name: "Aster T.", experience: "5 years experience", location: "Addis Ababa", match: 98, verified: true, skills: ["Cleaning", "Cooking", "Childcare"], image: "https://images.unsplash.com/photo-1523824275624-862ad8ef345b?w=400&q=80" },
-        { id: 2, name: "Mekdes A.", experience: "3 years experience", location: "Addis Ababa", match: 92, verified: true, skills: ["Cleaning", "Laundry"], image: "https://images.unsplash.com/photo-1616422325375-9270e599e1ee?w=400&q=80" },
-        { id: 3, name: "Helen B.", experience: "2 years experience", location: "Bahir Dar", match: 85, verified: false, skills: ["Cooking", "Elderly Care"], image: "https://images.unsplash.com/photo-1548175510-44026600c0f8?w=400&q=80" }
+        { id: 1, name: "Aster T.", experience: "5 years experience", location: "Addis Ababa", match: 98, verified: true, skills: ["Cleaning", "Cooking", "Childcare"], image: "/images/profiles/aster.png" },
+        { id: 2, name: "Mekdes A.", experience: "3 years experience", location: "Addis Ababa", match: 92, verified: true, skills: ["Cleaning", "Laundry"], image: "/images/profiles/mekdes.png" },
+        { id: 3, name: "Helen B.", experience: "2 years experience", location: "Bahir Dar", match: 85, verified: false, skills: ["Cooking", "Elderly Care"], image: "/images/profiles/helen.png" }
       ]);
       setIsLoadingMatches(false);
     }, 1500);
@@ -154,6 +154,22 @@ export function RegistrationForm({ role, onBack }) {
                 
                 </div>
               </div>
+
+              {role === "helper" && (
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    {t("registration.age")}
+                  </label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                    <Input
+                      type="number"
+                      placeholder={t("registration.agePlaceholder")}
+                      className="pl-11 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:ring-emerald-500/20 h-12"
+                    />
+                  </div>
+                </div>
+              )}
 
               {role !== "helper" && (
                 <div>
