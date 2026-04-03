@@ -9,8 +9,7 @@ import { SignInModal } from "@/components/sign-in-modal";
 import { RegistrationForm } from "@/components/registration-form";
 import Footer from "@/components/footer";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Home, Briefcase, Users, Shield, CheckCircle, BadgeCheck, Lock, Heart, FileCode } from "lucide-react";
-import { AIContractModal } from "@/components/ai-contract-modal";
+import { ArrowRight, Home, Briefcase, Users, Shield, CheckCircle, BadgeCheck, Lock, Heart } from "lucide-react";
 
 
 
@@ -18,7 +17,6 @@ import { AIContractModal } from "@/components/ai-contract-modal";
 export default function SmartHireApp() {
   const [currentView, setCurrentView] = useState("home");
   const [showSignIn, setShowSignIn] = useState(false);
-  const [showContractModal, setShowContractModal] = useState(false);
 
   const handleRoleSelect = (role) => {
     setCurrentView(`register-${role}`);
@@ -58,7 +56,6 @@ export default function SmartHireApp() {
             onHowItWorks={() => {
               document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" });
             }}
-            onTestContract={() => setShowContractModal(true)} 
             />
           
             <div id="how-it-works">
@@ -105,24 +102,13 @@ export default function SmartHireApp() {
       {/* Chatbot */}
       <Chatbot />
 
-      {/* AI Contract Modal */}
-      <AIContractModal 
-        isOpen={showContractModal} 
-        onClose={() => setShowContractModal(false)}
-        maidId={1}
-        jobId={1}
-        employerId={1}
-        maidName="Abebech Kebede"
-        employerName="Simret Abebe"
-      />
-
       {/* Footer */}
       <Footer />
     </div>);
 
 }
 
-function HeroSection({ onGetStarted, onHowItWorks, onTestContract }) {
+function HeroSection({ onGetStarted, onHowItWorks }) {
   const { t } = useTranslation();
 
   return (
@@ -167,13 +153,6 @@ function HeroSection({ onGetStarted, onHowItWorks, onTestContract }) {
             className="secondary-button text-lg px-10 py-7 rounded-xl">
             
             {t("hero.watchHow")}
-          </Button>
-          <Button
-            onClick={onTestContract}
-            className="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 text-lg px-10 py-7 rounded-xl"
-          >
-            <FileCode className="w-5 h-5 mr-2" />
-            Test AI Contract
           </Button>
         </div>
 
