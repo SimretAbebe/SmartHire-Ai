@@ -1,4 +1,4 @@
-﻿
+
 import { useState } from "react";
 import { useTranslation } from "@/lib/i18n-context";
 import { Navbar } from "@/components/navbar";
@@ -7,6 +7,7 @@ import { RoleCard } from "@/components/role-card";
 import { TrustSection } from "@/components/trust-section";
 import { SignInModal } from "@/components/sign-in-modal";
 import { RegistrationForm } from "@/components/registration-form";
+import Footer from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Home, Briefcase, Users, Shield, CheckCircle, BadgeCheck, Lock, Heart } from "lucide-react";
 
@@ -99,6 +100,9 @@ export default function SmartHireApp() {
 
       {/* Chatbot */}
       <Chatbot />
+
+      {/* Footer */}
+      <Footer />
     </div>);
 
 }
