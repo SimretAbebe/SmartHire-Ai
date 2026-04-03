@@ -108,48 +108,51 @@ from .models import MaidProfile
 class MatchMaidsView(APIView):
     """
     Uses Gemini AI to contextually match available maids to a specific job requirement.
+    Changed to GET to appropriately represent fetching data without mutation. 
     """
     permission_classes = [IsAuthenticated]
 
-    def post(self, request):
-        job_id = request.data.get('job_id')
+    def get(self, request):
+        # Extract ID from the URL Query params gracefully (e.g. ?job_id=1)
+        job_id = request.query_params.get('job_id')
         if not job_id:
-            return Response({"error": "Must provide job_id"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Must provide job_id as a query parameter"}, status=status.HTTP_400_BAD_REQUEST)
             
         job = get_object_or_404(JobPosting, pk=job_id)
         
-        # Query existing maids (In production limit this to top N or filter by location/salary range!)
+        # Load maids from the DB. 
+        # (Optional production upgrade: pre-filter `maids.filter(location=job.location)` to conserve AI token limits)
         maids = MaidProfile.objects.all()
         if not maids.exists():
              return Response({"matches": []}, status=status.HTTP_200_OK)
 
         maid_data = []
         for m in maids:
-            maid_data.append(f"ID {m.id}: Skills {m.skills}, Expected Salary {m.salary}, Location {m.location}")
+            maid_data.append(f"ID {m.id}: Skills {m.skills}, Salary {m.salary}, Location {m.location}")
             
         maid_list_str = "\n".join(maid_data)
         
+        # Explicit Prompting structure strictly requested by cursor prompt criteria
         prompt = f"""
-        You are an AI recruiting matchmaker for SmartHire.
-        Find the best fits dynamically!
+        You are an AI that ranks domestic workers based on employer requirements. 
+        Return JSON array [{{ "maid_id": id, "score": score }}], sorted descending.
         
-        Job Requirement: Skills: {job.required_skills}, Offered Salary: {job.salary}, Location: {job.location}
+        Job Requirement: Skills: {job.required_skills}, Salary: {job.salary}, Location: {job.location}
         
         Available Maids:
         {maid_list_str}
         
-        Analyze the available maids and evaluate them against the Job requirements. 
-        Return an array of JSON objects containing accurately corresponding integers 'maid_id', and a string 'reasoning'.
+        Evaluate the available maids against the job constraints based on exact skill matches, salary feasibility, and location proximity.
         Output exclusively valid JSON. Do not write text outside of the JSON array.
         """
         
         response_text = generate_ai_response(prompt)
         
         try:
-            # Clean markdown artifacts commonly supplied by Gemini natively
-            clean_json = response_text.replace('```json', '').replace('```', '')
+            # Clean markdown artifacts securely
+            clean_json = response_text.replace('```json', '').replace('```', '').strip()
             matches = json.loads(clean_json)
-            return Response({"matches": matches}, status=status.HTTP_200_OK)
+            return Response(matches, status=status.HTTP_200_OK)
         except json.JSONDecodeError:
              # Fall back to raw text payload if AI diverges into string dialogue
             return Response({"response_raw": response_text}, status=status.HTTP_200_OK)

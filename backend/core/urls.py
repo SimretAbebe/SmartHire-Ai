@@ -20,8 +20,8 @@ urlpatterns = [
     path('job/<int:pk>', JobPostingDetailView.as_view(), name='job-detail'),
     
     # AI Endpoints
-    # POST /api/match
-    path('match', MatchMaidsView.as_view(), name='match'),
+    # GET /api/matches?job_id=x
+    path('matches', MatchMaidsView.as_view(), name='matches'),
     # POST /api/contract
     path('contract', GenerateContractView.as_view(), name='contract'),
 ]
