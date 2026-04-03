@@ -97,3 +97,94 @@ class JobPostingDetailView(APIView):
         job = get_object_or_404(JobPosting, pk=pk)
         serializer = JobPostingSerializer(job)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+from .utils import generate_ai_response
+import json
+from .models import MaidProfile
+
+# 5. AI Engine Endpoints
+
+class MatchMaidsView(APIView):
+    """
+    Uses Gemini AI to contextually match available maids to a specific job requirement.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        job_id = request.data.get('job_id')
+        if not job_id:
+            return Response({"error": "Must provide job_id"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        job = get_object_or_404(JobPosting, pk=job_id)
+        
+        # Query existing maids (In production limit this to top N or filter by location/salary range!)
+        maids = MaidProfile.objects.all()
+        if not maids.exists():
+             return Response({"matches": []}, status=status.HTTP_200_OK)
+
+        maid_data = []
+        for m in maids:
+            maid_data.append(f"ID {m.id}: Skills {m.skills}, Expected Salary {m.salary}, Location {m.location}")
+            
+        maid_list_str = "\n".join(maid_data)
+        
+        prompt = f"""
+        You are an AI recruiting matchmaker for SmartHire.
+        Find the best fits dynamically!
+        
+        Job Requirement: Skills: {job.required_skills}, Offered Salary: {job.salary}, Location: {job.location}
+        
+        Available Maids:
+        {maid_list_str}
+        
+        Analyze the available maids and evaluate them against the Job requirements. 
+        Return an array of JSON objects containing accurately corresponding integers 'maid_id', and a string 'reasoning'.
+        Output exclusively valid JSON. Do not write text outside of the JSON array.
+        """
+        
+        response_text = generate_ai_response(prompt)
+        
+        try:
+            # Clean markdown artifacts commonly supplied by Gemini natively
+            clean_json = response_text.replace('```json', '').replace('```', '')
+            matches = json.loads(clean_json)
+            return Response({"matches": matches}, status=status.HTTP_200_OK)
+        except json.JSONDecodeError:
+             # Fall back to raw text payload if AI diverges into string dialogue
+            return Response({"response_raw": response_text}, status=status.HTTP_200_OK)
+
+
+class GenerateContractView(APIView):
+    """
+    Auto-generates a robust legal draft contract instantly merging AI formatting with db constants.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        job_id = request.data.get('job_id')
+        maid_id = request.data.get('maid_id')
+        
+        if not job_id or not maid_id:
+             return Response({"error": "job_id and maid_id require explicit mapping."}, status=status.HTTP_400_BAD_REQUEST)
+             
+        job = get_object_or_404(JobPosting, pk=job_id)
+        maid = get_object_or_404(MaidProfile, pk=maid_id)
+        
+        prompt = f"""
+        Draft a formal employment contract for a domestic worker (maid) and an employer on the SmartHire platform.
+        Employer Name: {job.user.name}
+        Maid Name: {maid.user.name}
+        Maid Verification (Fayda ID): {maid.fayda_id}
+        Primary Handled Duties: {job.required_skills}
+        Monthly Salary: {job.salary} birr
+        Working Location: {job.location}
+        
+        Ensure the contract is incredibly professional, strictly highlights duties, covers liability concisely, 
+        and concludes with signature lines for exactly these two named parties. Output strictly the contract string.
+        """
+        
+        contract_text = generate_ai_response(prompt)
+        
+        # Native dictionary formatting implicitly casts to JSON
+        return Response({"contract": contract_text}, status=status.HTTP_200_OK)
