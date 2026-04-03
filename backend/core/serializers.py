@@ -44,3 +44,11 @@ class LoginSerializer(serializers.Serializer):
         # Store validated user so view can extract it easily
         data['user'] = user
         return data
+
+# Map frontend values identically skipping internal relations implicitly populated (like 'user' or 'created_by')
+from .models import MaidProfile
+
+class MaidProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MaidProfile
+        fields = ['skills', 'location', 'availability', 'salary', 'fayda_id']
