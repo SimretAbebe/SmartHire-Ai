@@ -85,7 +85,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom Banner */}
-        <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="pt-8 pb-32 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-slate-500">
             &copy; {currentYear} SmartHire AI. All rights reserved.
           </p>
