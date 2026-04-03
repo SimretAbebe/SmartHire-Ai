@@ -165,29 +165,53 @@ class GenerateContractView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        # 1. Capture dynamic inputs safely
         job_id = request.data.get('job_id')
         maid_id = request.data.get('maid_id')
+        employer_id = request.data.get('employer_id')
+        extra_fields = request.data.get('extra_fields', '')
         
-        if not job_id or not maid_id:
-             return Response({"error": "job_id and maid_id require explicit mapping."}, status=status.HTTP_400_BAD_REQUEST)
+        if not all([job_id, maid_id, employer_id]):
+             return Response({"error": "job_id, maid_id, and employer_id require explicit mapping."}, status=status.HTTP_400_BAD_REQUEST)
              
+        # 2. Fetch required nodes from database safely returning 404 cleanly on miss
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        
         job = get_object_or_404(JobPosting, pk=job_id)
         maid = get_object_or_404(MaidProfile, pk=maid_id)
+        employer = get_object_or_404(User, pk=employer_id)
         
+        # 3. Construct the bilingual prompt requested natively for Gemini
         prompt = f"""
-        Draft a formal employment contract for a domestic worker (maid) and an employer on the SmartHire platform.
-        Employer Name: {job.user.name}
-        Maid Name: {maid.user.name}
-        Maid Verification (Fayda ID): {maid.fayda_id}
-        Primary Handled Duties: {job.required_skills}
+        Generate bilingual contract (Amharic + English) based on maid, employer, and job info.
+        
+        Information:
+        Employer Name: {employer.name}
+        Maid Name: {maid.user.name} (Fayda ID: {maid.fayda_id})
+        Job Duties: {job.required_skills}
         Monthly Salary: {job.salary} birr
         Working Location: {job.location}
+        Special Conditions: {extra_fields}
         
         Ensure the contract is incredibly professional, strictly highlights duties, covers liability concisely, 
-        and concludes with signature lines for exactly these two named parties. Output strictly the contract string.
+        and concludes with signature lines for exactly these two named parties. Output strictly valid JSON with 
+        NO surrounding markdown like ```json.
+        
+        Output Structure:
+        {{
+            "contract_am": "Amharic version of the contract string...",
+            "contract_en": "English version of the contract string..."
+        }}
         """
         
-        contract_text = generate_ai_response(prompt)
+        response_text = generate_ai_response(prompt)
         
-        # Native dictionary formatting implicitly casts to JSON
-        return Response({"contract": contract_text}, status=status.HTTP_200_OK)
+        try:
+            # Clean markdown artifacts securely ensuring valid JSON serialization natively
+            clean_json = response_text.replace('```json', '').replace('```', '').strip()
+            contract_json = json.loads(clean_json)
+            return Response(contract_json, status=status.HTTP_200_OK)
+        except json.JSONDecodeError:
+            # Fall back to raw text payload if AI diverges into string dialogue
+            return Response({"error": "AI response was not proper JSON", "raw_payload": response_text}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
