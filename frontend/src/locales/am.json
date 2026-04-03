@@ -1,0 +1,189 @@
+{
+  "navbar": {
+    "brand": "SmartHire AI",
+    "verifiedPlatform": "የተረጋገጠ መድረክ",
+    "signIn": "ግባ",
+    "language": "አማርኛ"
+  },
+  "hero": {
+    "badge": "የተረጋገጠ እና ደህንነቱ የተጠበቀ መድረክ",
+    "titleLine1": "የታመኑ",
+    "titleLine2": "የቤት ሰራተኞች ያግኙ",
+    "description": "ከተረጋገጡ የቤት ሰራተኞች፣ ቀጣሪዎች እና ወኪሎች ጋር በ AI ቴክኖሎጂ በተደገፈ መድረክ ይገናኙ። እያንዳንዱ መገለጫ በፋይዳ መታወቂያ ተረጋግጧል።",
+    "getStarted": "በነጻ ይጀምሩ",
+    "watchHow": "እንዴት እንደሚሰራ ይመልከቱ",
+    "noCreditCard": "የክሬዲት ካርድ አያስፈልግም",
+    "dataSecure": "መረጃዎ የተጠበቀ ነው",
+    "faydaVerified": "በፋይዳ መታወቂያ የተረጋገጠ"
+  },
+  "trust": {
+    "title": "ደህንነትዎ ቅድሚያ የምንሰጠው ነው",
+    "description": "ከሌሎች ጋር ከመገናኘታቸው በፊት እያንዳንዱን ተጠቃሚ በመንግስት የተሰጠ ፋይዳ መታወቂያ እናረጋግጣለን።",
+    "idVerified": "መታወቂያ የተረጋገጠ",
+    "backgroundChecks": "ዳራ ማረጋገጫ",
+    "reviewsSystem": "የግምገማ ስርዓት"
+  },
+  "features": {
+    "identityVerified": {
+      "title": "ማንነት የተረጋገጠ",
+      "description": "እያንዳንዱ ተጠቃሚ የፋይዳ መታወቂያ ማረጋገጫ ያልፋል። ከማን ጋር እንደሚሰሩ በትክክል ይወቁ።"
+    },
+    "communityTrusted": {
+      "title": "በማህበረሰብ የታመነ",
+      "description": "ከእውነተኛ ቀጣሪዎች እና ሰራተኞች ትክክለኛ ግምገማዎችን ያንብቡ። በመረጃ ላይ የተመሰረተ ውሳኔ ያድርጉ።"
+    },
+    "secureContracts": {
+      "title": "ደህንነቱ የተጠበቀ ኮንትራት",
+      "description": "በእንግሊዝኛ እና በአማርኛ ህጋዊ ኮንትራቶችን ይፍጠሩ። ሁለቱንም ወገኖች ይጠብቁ።"
+    }
+  },
+  "roleSelection": {
+    "backToHome": "ወደ መነሻ ተመለስ",
+    "title": "እንዴት መቀላቀል ይፈልጋሉ?",
+    "subtitle": "የተረጋገጠ መገለጫ ለመፍጠር እና ከታመኑ ሰዎች ጋር ለመገናኘት ሚናዎን ይምረጡ።",
+    "helper": {
+      "title": "ስራ እፈልጋለሁ",
+      "subtitle": "እንደ ሰራተኛ ይመዝገቡ",
+      "description": "የተረጋገጠ መገለጫዎን ይፍጠሩ፣ ችሎታዎን ያሳዩ እና ስራዎን ከሚያደንቁ ቀጣሪዎች ጋር ይገናኙ።"
+    },
+    "employer": {
+      "title": "የቤት ሰራተኛ እፈልጋለሁ",
+      "subtitle": "እንደ ቀጣሪ ይመዝገቡ",
+      "description": "ለፍላጎትዎ የተዛመዱ የተረጋገጡ እና ታማኝ ሰራተኞችን ያግኙ። መስፈርቶችን ይለጥፉ እና እጩዎችን ይገምግሙ።"
+    },
+    "agent": {
+      "title": "ሌሎችን ለማገናኘት እረዳለሁ",
+      "subtitle": "እንደ ወኪል ይመዝገቡ",
+      "description": "ማህበረሰብዎን ለመርዳት እንደ ደላላ ይቀላቀሉ። ቀጣሪዎችን ከሰራተኞች ጋር ያገናኙ እና የሪፈራል ሽልማት ያግኙ።"
+    },
+    "verificationRequired": "የፋይዳ መታወቂያ ማረጋገጫ ያስፈልጋል",
+    "continue": "ቀጥል"
+  },
+  "stats": {
+    "title": "በመላው ኢትዮጵያ በሺዎች የሚታመን",
+    "subtitle": "SmartHire AI የሚጠቀሙ እውነተኛ ሰዎች ቁጥሮች",
+    "verifiedUsers": "የተረጋገጡ ተጠቃሚዎች",
+    "successfulMatches": "የተሳካ ጥምረቶች",
+    "satisfactionRate": "የእርካታ ደረጃ",
+    "aiSupport": "AI ድጋፍ"
+  },
+  "howItWorks": {
+    "badge": "ቀላል ሂደት",
+    "title": "እንዴት እንደሚሰራ",
+    "subtitle": "በጥቂት ቀላል ደረጃዎች ይጀምሩ እና ዛሬ የታመነ እርዳታ ወይም ዕድሎችን ያግኙ።",
+    "step1": {
+      "title": "መገለጫዎን ይፍጠሩ",
+      "description": "ይመዝገቡ እና የተረጋገጠ መገለጫዎን ይፍጠሩ። ስለራስዎ፣ ችሎታዎ ወይም ምን አይነት እርዳታ እንደሚፈልጉ ይንገሩን።"
+    },
+    "step2": {
+      "title": "ማንነትዎን ያረጋግጡ",
+      "description": "እምነትን ለመገንባት የፋይዳ መታወቂያ ማረጋገጫን ያጠናቅቁ። ይህ በመድረካችን ላይ ያሉ ሁሉም ሰዎች የሚናገሩት መሆናቸውን ያረጋግጣል።"
+    },
+    "step3": {
+      "title": "ይዛመዱ",
+      "description": "የእኛ AI በፍላጎትዎ፣ አካባቢዎ እና ምርጫዎ ላይ በመመስረት ከምርጥ እጩዎች ጋር ያዛምድዎታል።"
+    },
+    "step4": {
+      "title": "በደህና ይገናኙ",
+      "description": "መገለጫዎችን ይገምግሙ፣ ግምገማዎችን ያንብቡ እና በእምነት ይገናኙ። ለአእምሮ ሰላም ደህንነቱ የተጠበቀ ኮንትራቶችን ያመንጩ።"
+    },
+    "cta": "ጉዞዎን ይጀምሩ"
+  },
+  "chatbot": {
+    "title": "SmartHire ረዳት",
+    "online": "በመስመር ላይ",
+    "greeting": "ሰላም! ወደ SmartHire AI እንኳን በደህና መጡ።",
+    "helpMessage": "የቤት ሰራተኛ ወይም የስራ ዕድል ለማግኘት ልረዳዎ እችላለሁ። ውይይታችንን ለመቀጠል እባክዎ ይግቡ።",
+    "placeholder": "ለመወያየት ይግቡ...",
+    "privateMessage": "ውይይትዎ የግል እና ደህንነቱ የተጠበቀ ነው"
+  },
+  "signIn": {
+    "title": "እንኳን ደህና መጡ",
+    "subtitle": "ወደ SmartHire AI መለያዎ ይግቡ",
+    "email": "ኢሜይል አድራሻ",
+    "emailPlaceholder": "ኢሜይልዎን ያስገቡ",
+    "password": "የይለፍ ቃል",
+    "passwordPlaceholder": "የይለፍ ቃልዎን ያስገቡ",
+    "forgotPassword": "የይለፍ ቃል ረሱ?",
+    "signInButton": "ግባ",
+    "noAccount": "መለያ የሎትም?",
+    "createAccount": "መለያ ፍጠር",
+    "orContinue": "ወይም ቀጥል በ",
+    "phone": "ስልክ ቁጥር"
+  },
+  "registration": {
+    "helper": {
+      "title": "እንደ ሰራተኛ ይመዝገቡ",
+      "subtitle": "የተረጋገጠ መገለጫዎን ይፍጠሩ እና የስራ ዕድሎችን ማግኘት ይጀምሩ"
+    },
+    "employer": {
+      "title": "እንደ ቀጣሪ ይመዝገቡ",
+      "subtitle": "የተረጋገጡ እና ታማኝ የቤት ሰራተኞችን ያግኙ"
+    },
+    "agent": {
+      "title": "እንደ ወኪል ይመዝገቡ",
+      "subtitle": "ማህበረሰብዎን ለማገናኘት ይረዱ እና የሪፈራል ሽልማት ያግኙ"
+    },
+    "fullName": "ሙሉ ስም",
+    "fullNamePlaceholder": "ሙሉ ስምዎን ያስገቡ",
+    "phone": "ስልክ ቁጥር",
+    "phonePlaceholder": "+251 9XX XXX XXX",
+    "email": "ኢሜይል አድራሻ (አማራጭ)",
+    "emailPlaceholder": "ኢሜይልዎን ያስገቡ",
+    "faydaId": "የፋይዳ መታወቂያ ቁጥር",
+    "faydaIdPlaceholder": "12-አሃዝ የፋይዳ መታወቂያዎን ያስገቡ",
+    "location": "አካባቢ",
+    "locationPlaceholder": "ከተማ፣ ክልል",
+    "skills": "ችሎታ እና ልምድ",
+    "skillsPlaceholder": "ችሎታዎን እና ልምድዎን ይግለጹ...",
+    "requirements": "የስራ መስፈርቶች",
+    "requirementsPlaceholder": "የሚፈልጉትን የእርዳታ አይነት ይግለጹ...",
+    "agencyName": "የኤጀንሲ/ንግድ ስም",
+    "agencyNamePlaceholder": "የኤጀንሲዎን ስም ያስገቡ",
+    "submit": "መለያ ፍጠር",
+    "backToRoles": "ወደ ሚና ምርጫ ተመለስ",
+    "agreeTerms": "የአገልግሎት ውሎች እና የግላዊነት ፖሊሲ እስማማለሁ",
+    "verifyId": "መታወቂያዬን አረጋግጥ",
+    "profilePhoto": "የመገለጫ ፎቶ",
+    "primarySkills": "ዋና ችሎታዎች",
+    "primarySkillsPlaceholder": "ዋና ችሎታዎን ይምረጡ...",
+    "skillCleaning": "ጽዳት እና የቤት አስተዳደር",
+    "skillCooking": "ምግብ ማብሰል",
+    "skillChildcare": "የልጆች እንክብካቤ እና ሞግዚትነት",
+    "skillElderly": "የአረጋውያን እንክብካቤ",
+    "skillDriving": "ማሽከርከር",
+    "skillGardening": "አትክልት መንከባከብ",
+    "contractPreference": "የኮንትራት ምርጫ",
+    "contractPreferencePlaceholder": "ለምሳሌ፡ ከአሰሪ ጋር የሚኖር፣ ከሰኞ-አርብ 8 ሰአት - 5 ሰአት...",
+    "paymentExpectation": "የሚጠበቅ ክፍያ",
+    "paymentExpectationPlaceholder": "ለምሳሌ፡ 5000 ብር በወር ወይም በድርድር",
+    "skillsRequired": "የሚፈለጉ ችሎታዎች",
+    "skillsRequiredPlaceholder": "የሚፈለገውን ዋና ችሎታ ይምረጡ...",
+    "contractTerms": "የኮንትራት መግለጫ እና ውሎች",
+    "contractTermsPlaceholder": "ለምሳሌ፡ የስራ ሰዓት፣ ከቀጣሪ ጋር መኖር/አለመኖር፣ የቆይታ ጊዜ...",
+    "paymentOffering": "የሚቀርብ ክፍያ",
+    "paymentOfferingPlaceholder": "ለምሳሌ፡ 5000 ብር በወር ወይም በድርድር",
+    "tinVerificationTitle": "የግብር ከፋይ መለያ ቁጥር ማረጋገጫ",
+    "tinVerificationDesc": "ለንግድ ማረጋገጫ እባክዎ የግብር ከፋይ መለያ ቁጥርዎን ያቅርቡ።",
+    "tinNumber": "የግብር ከፋይ መለያ ቁጥር (TIN)",
+    "tinNumberPlaceholder": "ለምሳሌ፡ 0001234567"
+  },
+  "footer": {
+    "description": "በ AI ቴክኖሎጂ፣ ጥብቅ ማጣሪያ እና በፋይዳ መታወቂያ ማረጋገጫ የቅጥር ሂደትን እያዘመንን ነው። የእርስዎን ህልም ስራ ወይም ተስማሚ ሰራተኛ ዛሬ ያግኙ።",
+    "quickLinks": "ፈጣን አገናኞች",
+    "findJobs": "ስራዎችን ያግኙ",
+    "postJob": "ስራ ይለጥፉ",
+    "companies": "ኩባንያዎች",
+    "pricing": "ዋጋ",
+    "aboutUs": "ስለ እኛ",
+    "resources": "ግብዓቶች",
+    "helpCenter": "የእገዛ ማዕከል",
+    "terms": "የአገልግሎት ውሎች",
+    "privacy": "የግላዊነት ፖሊሲ",
+    "cookie": "የኩኪ ፖሊሲ",
+    "security": "ደህንነት",
+    "contact": "ያግኙን",
+    "addressTitle": "ባህር ዳር፣ ኢትዮጵያ",
+    "rights": "SmartHire AI. መብቱ በህግ የተጠበቀ ነው።"
+  }
+}
