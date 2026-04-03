@@ -56,3 +56,38 @@ def validate_fayda_id(fayda_id: str) -> bool:
         c = D[c][P[i % 8][n]]
         
     return c == 0
+
+import google.generativeai as genai
+from django.conf import settings
+import logging
+
+logger = logging.getLogger(__name__)
+
+def generate_ai_response(prompt: str) -> str:
+    """
+    Generates an AI response using Google's generative models.
+    Specifically configured to use gemini-1.5-flash for rapid reasoning tasks 
+    like AI matching algorithms and Contract generation.
+    """
+    # 1. Load the GEMINI_API_KEY implicitly from the securely loaded settings variables 
+    # (populated earlier via .env)
+    api_key = settings.GEMINI_API_KEY
+    if not api_key or api_key == 'your-gemini-api-key-here':
+        logger.error("Gemini API Key is missing or invalid.")
+        return "Error: Gemini API setup is incomplete."
+    
+    # 2. Configure the google-generativeai module with the recovered key
+    genai.configure(api_key=api_key)
+    
+    # 3. Instantiate the specifically requested 'gemini-1.5-flash' lightning-fast model
+    try:
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        
+        # 4. Execute the generation utilizing the user prompts synchronously
+        response = model.generate_content(prompt)
+        
+        # 5. Native returns to the caller as raw string text
+        return response.text
+    except Exception as e:
+        logger.error(f"Failed to generate response: {e}")
+        return f"Warning: AI service communication failure - {str(e)}"

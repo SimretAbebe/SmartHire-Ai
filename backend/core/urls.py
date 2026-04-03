@@ -1,5 +1,9 @@
 from django.urls import path
-from .views import RegisterView, LoginView, MaidProfileView, JobPostingView, JobPostingDetailView
+from .views import (
+    RegisterView, LoginView, MaidProfileView, 
+    JobPostingView, JobPostingDetailView, 
+    MatchMaidsView, GenerateContractView
+)
 
 urlpatterns = [
     # Mapped natively to /api/register due to backend urls binding
@@ -14,4 +18,10 @@ urlpatterns = [
     path('job', JobPostingView.as_view(), name='job'),
     # GET /api/job/<id>
     path('job/<int:pk>', JobPostingDetailView.as_view(), name='job-detail'),
+    
+    # AI Endpoints
+    # POST /api/match
+    path('match', MatchMaidsView.as_view(), name='match'),
+    # POST /api/contract
+    path('contract', GenerateContractView.as_view(), name='contract'),
 ]
