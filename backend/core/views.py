@@ -42,3 +42,28 @@ class LoginView(APIView):
             
         # Error handling gracefully outputs custom validation raises configured in serialize.py
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+from rest_framework.permissions import IsAuthenticated
+from .utils import validate_fayda_id
+from .serializers import MaidProfileSerializer
+
+# 3. Maid Profile View
+class MaidProfileView(APIView):
+    # This requires Token validation via DRF Token header payload
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        fayda_id = request.data.get('fayda_id', '')
+        
+        # Immediate requirement mapping: 
+        # Validate through strict Verhoeff algorithm returning custom isolated error immediately upon fail
+        if not validate_fayda_id(fayda_id):
+            return Response({"error": "Invalid Fayda ID"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        serializer = MaidProfileSerializer(data=request.data)
+        if serializer.is_valid():
+            # Inject relation object directly passing token identity to Maid relation
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
