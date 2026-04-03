@@ -1,21 +1,7 @@
-# Environments
-venv/
-env/
-.env
-
-# Python caching
-__pycache__/
+node_modules/
+.vite/
+dist/
 *.pyc
-*.pyo
-*.pyd
-.Python
-env.bak/
-venv.bak/
-
-# Database
+__pycache__/
 db.sqlite3
-
-# IDEs
-.vscode/
-.idea/
-*.swp
+.env

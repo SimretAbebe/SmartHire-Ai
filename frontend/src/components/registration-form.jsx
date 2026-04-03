@@ -20,6 +20,48 @@ export function RegistrationForm({ role, onBack }) {
 
   const currentMaxStep = role === "employer" ? 4 : 3;
 
+  // Data trackers for payload
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [faydaId, setFaydaId] = useState("");
+  const [tinNumber, setTinNumber] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  // Natively execute Django POST /api/register request
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (step < 3) return; // Prevent raw submission during Wizard navigation
+    setErrorMsg("");
+    
+    // Convert 'helper' strictly to backends 'maid' parameter
+    const backendRole = role === "helper" ? "maid" : role;
+    
+    try {
+        const payload = { name, phone, password, role: backendRole };
+        if (faydaId) payload.fayda_id = faydaId;
+        if (tinNumber) payload.tin_number = tinNumber;
+        
+        const res = await fetch("http://127.0.0.1:8000/api/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+        
+        const data = await res.json();
+        if (!res.ok) {
+            let errorText = data.error || "Registration error";
+            if (data.errors) errorText = JSON.stringify(data.errors);
+            throw new Error(errorText);
+        }
+        
+        alert("Registration Verified & Successful! Please Log in.");
+        onBack(); // Escapes back to main UI so they can Login
+    } catch(err) {
+        setErrorMsg(err.message);
+    }
+  };
+
   const availableSkills = [
     { id: "cleaning", label: t("registration.skillCleaning") || "Cleaning & Housekeeping" },
     { id: "cooking", label: t("registration.skillCooking") || "Cooking & Culinary" },
@@ -122,7 +164,12 @@ export function RegistrationForm({ role, onBack }) {
 
       {/* Form Card */}
       <div className="glass-card-solid rounded-2xl p-8">
-        <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+        <form className="space-y-6" onSubmit={handleSubmit}>
+          {errorMsg && (
+            <div className="p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm whitespace-pre-wrap">
+              {errorMsg}
+            </div>
+          )}
           {step === 1 &&
           <>
               <h3 className="text-lg font-semibold text-white mb-4">Personal Information</h3>
@@ -135,6 +182,7 @@ export function RegistrationForm({ role, onBack }) {
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                   <Input
                   type="text"
+                  value={name} onChange={(e) => setName(e.target.value)} required
                   placeholder={t("registration.fullNamePlaceholder")}
                   className="pl-11 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:ring-emerald-500/20 h-12" />
                 
@@ -149,9 +197,22 @@ export function RegistrationForm({ role, onBack }) {
                   <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                   <Input
                   type="tel"
+                  value={phone} onChange={(e) => setPhone(e.target.value)} required
                   placeholder={t("registration.phonePlaceholder")}
                   className="pl-11 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:ring-emerald-500/20 h-12" />
                 
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">Password</label>
+                <div className="relative">
+                  <Shield className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                  <Input
+                  type="password"
+                  value={password} onChange={(e) => setPassword(e.target.value)} required
+                  placeholder="Create a strong password"
+                  className="pl-11 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:ring-emerald-500/20 h-12" />
                 </div>
               </div>
 
@@ -401,6 +462,7 @@ export function RegistrationForm({ role, onBack }) {
                   <BadgeCheck className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                   <Input
                   type="text"
+                  value={faydaId} onChange={(e) => setFaydaId(e.target.value)}
                   placeholder={t("registration.faydaIdPlaceholder")}
                   className="pl-11 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:ring-emerald-500/20 h-12" />
                 
@@ -429,6 +491,7 @@ export function RegistrationForm({ role, onBack }) {
                     <FileText className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                     <Input
                       type="text"
+                      value={tinNumber} onChange={(e) => setTinNumber(e.target.value)}
                       placeholder={t("registration.tinNumberPlaceholder")}
                       className="pl-11 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-cyan-500/20 h-12" 
                     />
