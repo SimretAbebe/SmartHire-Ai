@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { useTranslation } from "@/lib/i18n-context";
-import { ArrowRight, Home, Briefcase, Users, BadgeCheck, Phone, Mail, MapPin, User, FileText, Building, Shield, CheckCircle } from "lucide-react";
+import { ArrowRight, Home, Briefcase, Users, BadgeCheck, Phone, Mail, MapPin, User, FileText, Building, Shield, CheckCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -14,6 +14,29 @@ export function RegistrationForm({ role, onBack }) {
   const { t } = useTranslation();
   const [step, setStep] = useState(1);
   const [agreed, setAgreed] = useState(false);
+  const [selectedSkills, setSelectedSkills] = useState([]);
+
+  const availableSkills = [
+    { id: "cleaning", label: t("registration.skillCleaning") || "Cleaning & Housekeeping" },
+    { id: "cooking", label: t("registration.skillCooking") || "Cooking & Culinary" },
+    { id: "childcare", label: t("registration.skillChildcare") || "Childcare & Nanny" },
+    { id: "elderly", label: t("registration.skillElderly") || "Elderly Care" },
+    { id: "laundry", label: "Laundry & Ironing" },
+    { id: "driving", label: t("registration.skillDriving") || "Driving" },
+    { id: "gardening", label: t("registration.skillGardening") || "Gardening & Maintenance" }
+  ];
+
+  const handleSkillSelect = (e) => {
+    const value = e.target.value;
+    if (value && !selectedSkills.includes(value)) {
+      setSelectedSkills([...selectedSkills, value]);
+    }
+    e.target.value = ""; // Reset basic select to show placeholder again
+  };
+
+  const removeSkill = (skillId) => {
+    setSelectedSkills(selectedSkills.filter(id => id !== skillId));
+  };
 
   const roleConfig = {
     helper: {
@@ -192,15 +215,36 @@ export function RegistrationForm({ role, onBack }) {
                     <label className="block text-sm font-medium text-slate-300 mb-2">
                       {t("registration.primarySkills")}
                     </label>
-                    <select className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white appearance-none focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20">
-                      <option value="">{t("registration.primarySkillsPlaceholder")}</option>
-                      <option value="cleaning">{t("registration.skillCleaning")}</option>
-                      <option value="cooking">{t("registration.skillCooking")}</option>
-                      <option value="childcare">{t("registration.skillChildcare")}</option>
-                      <option value="elderly">{t("registration.skillElderly")}</option>
-                      <option value="driving">{t("registration.skillDriving")}</option>
-                      <option value="gardening">{t("registration.skillGardening")}</option>
-                    </select>
+                    <div className="space-y-3">
+                      <select 
+                        onChange={handleSkillSelect}
+                        className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white appearance-none focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20"
+                        defaultValue=""
+                      >
+                        <option value="" disabled>{t("registration.primarySkillsPlaceholder")}</option>
+                        {availableSkills.map(skill => (
+                          <option key={skill.id} value={skill.id} disabled={selectedSkills.includes(skill.id)}>
+                            {skill.label}
+                          </option>
+                        ))}
+                      </select>
+                      
+                      {selectedSkills.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {selectedSkills.map(skillId => {
+                            const skill = availableSkills.find(s => s.id === skillId);
+                            return (
+                              <span key={skillId} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-sm">
+                                {skill?.label}
+                                <button type="button" onClick={() => removeSkill(skillId)} className="hover:text-white transition-colors focus:outline-none">
+                                  <X className="w-3.5 h-3.5" />
+                                </button>
+                              </span>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-300 mb-2">
@@ -229,15 +273,36 @@ export function RegistrationForm({ role, onBack }) {
                     <label className="block text-sm font-medium text-slate-300 mb-2">
                       {t("registration.skillsRequired")}
                     </label>
-                    <select className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white appearance-none focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500/20">
-                      <option value="">{t("registration.skillsRequiredPlaceholder")}</option>
-                      <option value="cleaning">{t("registration.skillCleaning")}</option>
-                      <option value="cooking">{t("registration.skillCooking")}</option>
-                      <option value="childcare">{t("registration.skillChildcare")}</option>
-                      <option value="elderly">{t("registration.skillElderly")}</option>
-                      <option value="driving">{t("registration.skillDriving")}</option>
-                      <option value="gardening">{t("registration.skillGardening")}</option>
-                    </select>
+                    <div className="space-y-3">
+                      <select 
+                        onChange={handleSkillSelect}
+                        className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white appearance-none focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500/20"
+                        defaultValue=""
+                      >
+                        <option value="" disabled>{t("registration.skillsRequiredPlaceholder")}</option>
+                        {availableSkills.map(skill => (
+                          <option key={skill.id} value={skill.id} disabled={selectedSkills.includes(skill.id)}>
+                            {skill.label}
+                          </option>
+                        ))}
+                      </select>
+                      
+                      {selectedSkills.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {selectedSkills.map(skillId => {
+                            const skill = availableSkills.find(s => s.id === skillId);
+                            return (
+                              <span key={skillId} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-teal-500/10 text-teal-400 border border-teal-500/20 rounded-full text-sm">
+                                {skill?.label}
+                                <button type="button" onClick={() => removeSkill(skillId)} className="hover:text-white transition-colors focus:outline-none">
+                                  <X className="w-3.5 h-3.5" />
+                                </button>
+                              </span>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-300 mb-2">
