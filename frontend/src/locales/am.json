@@ -130,6 +130,8 @@
     "phonePlaceholder": "+251 9XX XXX XXX",
     "email": "ኢሜይል አድራሻ (አማራጭ)",
     "emailPlaceholder": "ኢሜይልዎን ያስገቡ",
+    "age": "እድሜ",
+    "agePlaceholder": "እድሜዎን ያስገቡ",
     "faydaId": "የፋይዳ መታወቂያ ቁጥር",
     "faydaIdPlaceholder": "12-አሃዝ የፋይዳ መታወቂያዎን ያስገቡ",
     "location": "አካባቢ",

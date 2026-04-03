@@ -130,6 +130,8 @@
     "phonePlaceholder": "+251 9XX XXX XXX",
     "email": "Email Address (Optional)",
     "emailPlaceholder": "Enter your email",
+    "age": "Age",
+    "agePlaceholder": "Enter your age",
     "faydaId": "Fayda ID Number",
     "faydaIdPlaceholder": "Enter your 12-digit Fayda ID",
     "location": "Location",
