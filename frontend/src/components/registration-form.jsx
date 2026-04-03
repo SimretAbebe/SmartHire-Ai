@@ -135,7 +135,7 @@ export function RegistrationForm({ role, onBack }) {
               {role === "helper" && (
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-2">
-                    Profile Photo
+                    {t("registration.profilePhoto")}
                   </label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
@@ -190,50 +190,87 @@ export function RegistrationForm({ role, onBack }) {
                 <div className="space-y-6">
                   <div>
                     <label className="block text-sm font-medium text-slate-300 mb-2">
-                      Primary Skills
+                      {t("registration.primarySkills")}
                     </label>
                     <select className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white appearance-none focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20">
-                      <option value="">Select your main skill...</option>
-                      <option value="cleaning">Cleaning & Housekeeping</option>
-                      <option value="cooking">Cooking & Culinary</option>
-                      <option value="childcare">Childcare & Nanny</option>
-                      <option value="elderly">Elderly Care</option>
-                      <option value="driving">Driving</option>
-                      <option value="gardening">Gardening & Maintenance</option>
+                      <option value="">{t("registration.primarySkillsPlaceholder")}</option>
+                      <option value="cleaning">{t("registration.skillCleaning")}</option>
+                      <option value="cooking">{t("registration.skillCooking")}</option>
+                      <option value="childcare">{t("registration.skillChildcare")}</option>
+                      <option value="elderly">{t("registration.skillElderly")}</option>
+                      <option value="driving">{t("registration.skillDriving")}</option>
+                      <option value="gardening">{t("registration.skillGardening")}</option>
                     </select>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-300 mb-2">
-                      Contract Preference
+                      {t("registration.contractPreference")}
                     </label>
                     <textarea
-                      placeholder="E.g., Live-in or Live-out, Mon-Fri 8AM-5PM, weekends off..."
+                      placeholder={t("registration.contractPreferencePlaceholder")}
                       rows={3}
                       className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 resize-none"
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-300 mb-2">
-                      Payment Expectation
+                      {t("registration.paymentExpectation")}
                     </label>
                     <Input
                       type="text"
-                      placeholder="E.g., 5000 ETB/month or Negotiable"
+                      placeholder={t("registration.paymentExpectationPlaceholder")}
                       className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:ring-emerald-500/20 h-12"
+                    />
+                  </div>
+                </div>
+              ) : role === "employer" ? (
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      {t("registration.skillsRequired")}
+                    </label>
+                    <select className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white appearance-none focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500/20">
+                      <option value="">{t("registration.skillsRequiredPlaceholder")}</option>
+                      <option value="cleaning">{t("registration.skillCleaning")}</option>
+                      <option value="cooking">{t("registration.skillCooking")}</option>
+                      <option value="childcare">{t("registration.skillChildcare")}</option>
+                      <option value="elderly">{t("registration.skillElderly")}</option>
+                      <option value="driving">{t("registration.skillDriving")}</option>
+                      <option value="gardening">{t("registration.skillGardening")}</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      {t("registration.contractTerms")}
+                    </label>
+                    <textarea
+                      placeholder={t("registration.contractTermsPlaceholder")}
+                      rows={3}
+                      className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500/20 resize-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      {t("registration.paymentOffering")}
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder={t("registration.paymentOfferingPlaceholder")}
+                      className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-teal-500 focus:ring-teal-500/20 h-12"
                     />
                   </div>
                 </div>
               ) : (
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-2">
-                    {role === "employer" ? t("registration.requirements") : t("registration.skills")}
+                    {t("registration.skills")}
                   </label>
                   <div className="relative">
                     <FileText className="absolute left-3 top-4 w-5 h-5 text-slate-500" />
                     <textarea
-                      placeholder={role === "employer" ? t("registration.requirementsPlaceholder") : t("registration.skillsPlaceholder")}
+                      placeholder={t("registration.skillsPlaceholder")}
                       rows={4}
-                      className="w-full pl-11 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder:text-slate-500 focus:border-emerald-500 focus:ring-emerald-500/20 focus:outline-none resize-none" 
+                      className="w-full pl-11 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-cyan-500/20 focus:outline-none resize-none" 
                     />
                   </div>
                 </div>
@@ -272,6 +309,35 @@ export function RegistrationForm({ role, onBack }) {
                 
                 </div>
               </div>
+
+              {role === "agent" && (
+                <div className="mt-6">
+                  <div className="glass-card rounded-xl p-6 mb-6">
+                    <div className="flex items-start gap-4">
+                      <div className="bg-gradient-to-br from-cyan-500 to-blue-600 p-3 rounded-xl shadow-lg shadow-cyan-500/20">
+                        <Building className="w-6 h-6 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="text-white font-medium mb-1">{t("registration.tinVerificationTitle")}</h4>
+                        <p className="text-slate-400 text-sm">
+                          {t("registration.tinVerificationDesc")}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    {t("registration.tinNumber")}
+                  </label>
+                  <div className="relative">
+                    <FileText className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                    <Input
+                      type="text"
+                      placeholder={t("registration.tinNumberPlaceholder")}
+                      className="pl-11 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-cyan-500/20 h-12" 
+                    />
+                  </div>
+                </div>
+              )}
 
               <label className="flex items-start gap-3 cursor-pointer group">
                 <input

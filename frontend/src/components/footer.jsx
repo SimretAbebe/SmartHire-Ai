@@ -1,8 +1,10 @@
 import React from 'react';
 import { Facebook, Twitter, Instagram, Linkedin, Mail, MapPin, Phone } from 'lucide-react';
+import { useTranslation } from "@/lib/i18n-context";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const { t, language, setLanguage } = useTranslation();
 
   return (
     <footer className="w-full bg-slate-950 text-slate-300 py-16 mt-24 border-t border-slate-800 relative overflow-hidden">
@@ -16,10 +18,10 @@ export default function Footer() {
           <div className="space-y-6">
             <div>
               <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-teal-200">
-                SmartHire AI
+                {t("navbar.brand")}
               </h2>
               <p className="mt-4 text-sm leading-relaxed text-slate-400">
-                Revolutionizing the hiring process through intelligent matching, automated screening, and seamless Fayda ID verification. Find your dream job or perfect candidate today.
+                {t("footer.description")}
               </p>
             </div>
             
@@ -41,35 +43,35 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-semibold text-slate-100 mb-6 font-display">Quick Links</h3>
+            <h3 className="text-lg font-semibold text-slate-100 mb-6 font-display">{t("footer.quickLinks")}</h3>
             <ul className="space-y-4 text-sm font-medium">
-              <li><a href="#" className="hover:text-emerald-400 transition-colors inline-block hover:translate-x-1 transform duration-200">Find Jobs</a></li>
-              <li><a href="#" className="hover:text-emerald-400 transition-colors inline-block hover:translate-x-1 transform duration-200">Post a Job</a></li>
-              <li><a href="#" className="hover:text-emerald-400 transition-colors inline-block hover:translate-x-1 transform duration-200">Companies</a></li>
-              <li><a href="#" className="hover:text-emerald-400 transition-colors inline-block hover:translate-x-1 transform duration-200">Pricing</a></li>
-              <li><a href="#" className="hover:text-emerald-400 transition-colors inline-block hover:translate-x-1 transform duration-200">About Us</a></li>
+              <li><a href="#" className="hover:text-emerald-400 transition-colors inline-block hover:translate-x-1 transform duration-200">{t("footer.findJobs")}</a></li>
+              <li><a href="#" className="hover:text-emerald-400 transition-colors inline-block hover:translate-x-1 transform duration-200">{t("footer.postJob")}</a></li>
+              <li><a href="#" className="hover:text-emerald-400 transition-colors inline-block hover:translate-x-1 transform duration-200">{t("footer.companies")}</a></li>
+              <li><a href="#" className="hover:text-emerald-400 transition-colors inline-block hover:translate-x-1 transform duration-200">{t("footer.pricing")}</a></li>
+              <li><a href="#" className="hover:text-emerald-400 transition-colors inline-block hover:translate-x-1 transform duration-200">{t("footer.aboutUs")}</a></li>
             </ul>
           </div>
 
           {/* Legal & Resources */}
           <div>
-            <h3 className="text-lg font-semibold text-slate-100 mb-6 font-display">Resources</h3>
+            <h3 className="text-lg font-semibold text-slate-100 mb-6 font-display">{t("footer.resources")}</h3>
             <ul className="space-y-4 text-sm font-medium">
-              <li><a href="#" className="hover:text-emerald-400 transition-colors inline-block hover:translate-x-1 transform duration-200">Help Center</a></li>
-              <li><a href="#" className="hover:text-emerald-400 transition-colors inline-block hover:translate-x-1 transform duration-200">Terms of Service</a></li>
-              <li><a href="#" className="hover:text-emerald-400 transition-colors inline-block hover:translate-x-1 transform duration-200">Privacy Policy</a></li>
-              <li><a href="#" className="hover:text-emerald-400 transition-colors inline-block hover:translate-x-1 transform duration-200">Cookie Policy</a></li>
-              <li><a href="#" className="hover:text-emerald-400 transition-colors inline-block hover:translate-x-1 transform duration-200">Security</a></li>
+              <li><a href="#" className="hover:text-emerald-400 transition-colors inline-block hover:translate-x-1 transform duration-200">{t("footer.helpCenter")}</a></li>
+              <li><a href="#" className="hover:text-emerald-400 transition-colors inline-block hover:translate-x-1 transform duration-200">{t("footer.terms")}</a></li>
+              <li><a href="#" className="hover:text-emerald-400 transition-colors inline-block hover:translate-x-1 transform duration-200">{t("footer.privacy")}</a></li>
+              <li><a href="#" className="hover:text-emerald-400 transition-colors inline-block hover:translate-x-1 transform duration-200">{t("footer.cookie")}</a></li>
+              <li><a href="#" className="hover:text-emerald-400 transition-colors inline-block hover:translate-x-1 transform duration-200">{t("footer.security")}</a></li>
             </ul>
           </div>
 
           {/* Contact Info */}
           <div>
-            <h3 className="text-lg font-semibold text-slate-100 mb-6 font-display">Contact Us</h3>
+            <h3 className="text-lg font-semibold text-slate-100 mb-6 font-display">{t("footer.contact")}</h3>
             <ul className="space-y-4 text-sm">
               <li className="flex items-start gap-3">
                 <MapPin className="text-emerald-500 mt-0.5 shrink-0" size={18} />
-                <span className="text-slate-400 leading-relaxed">Bahir Dar, Ethiopia</span>
+                <span className="text-slate-400 leading-relaxed">{t("footer.addressTitle")}</span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="text-emerald-500 shrink-0" size={18} />
@@ -87,11 +89,11 @@ export default function Footer() {
         {/* Bottom Banner */}
         <div className="pt-8 pb-32 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-slate-500">
-            &copy; {currentYear} SmartHire AI. All rights reserved.
+            &copy; {currentYear} {t("footer.rights")}
           </p>
           <div className="flex gap-6 text-sm font-medium text-slate-500">
-            <a href="#" className="hover:text-slate-300 transition-colors">English</a>
-            <a href="#" className="hover:text-slate-300 transition-colors">Amharic</a>
+            <button onClick={() => setLanguage("en")} className={`hover:text-slate-300 transition-colors ${language === "en" ? "text-emerald-400" : ""}`}>English</button>
+            <button onClick={() => setLanguage("am")} className={`hover:text-slate-300 transition-colors ${language === "am" ? "text-emerald-400" : ""}`}>Amharic</button>
           </div>
         </div>
       </div>

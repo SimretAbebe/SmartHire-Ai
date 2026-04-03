@@ -16,7 +16,7 @@ export function LanguageToggle() {
       aria-label="Toggle language">
       
       <Globe className="w-4 h-4 text-emerald-400" />
-      <span className="text-sm font-medium text-white/90">{language === "en" ? "ENG" : "AMH"}</span>
+      <span className="text-sm font-medium text-white/90">{language === "en" ? "ENG" : "አማ"}</span>
     </button>);
 
 }
