@@ -116,19 +116,37 @@ export function RegistrationForm({ role, onBack }) {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  {t("registration.email")}
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
-                  <Input
-                  type="email"
-                  placeholder={t("registration.emailPlaceholder")}
-                  className="pl-11 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:ring-emerald-500/20 h-12" />
-                
+              {role !== "helper" && (
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    {t("registration.email")}
+                  </label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                    <Input
+                      type="email"
+                      placeholder={t("registration.emailPlaceholder")}
+                      className="pl-11 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:ring-emerald-500/20 h-12" 
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {role === "helper" && (
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Profile Photo
+                  </label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                    <input
+                      type="file"
+                      accept=".jpg,.jpeg,.png"
+                      className="w-full pl-11 py-2.5 bg-slate-800/50 border border-slate-700 rounded-lg text-white file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-emerald-500/10 file:text-emerald-500 hover:file:bg-emerald-500/20 transition-colors focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20" 
+                    />
+                  </div>
+                </div>
+              )}
 
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-2">
@@ -168,19 +186,58 @@ export function RegistrationForm({ role, onBack }) {
                 </div>
             }
 
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  {role === "employer" ? t("registration.requirements") : t("registration.skills")}
-                </label>
-                <div className="relative">
-                  <FileText className="absolute left-3 top-4 w-5 h-5 text-slate-500" />
-                  <textarea
-                  placeholder={role === "employer" ? t("registration.requirementsPlaceholder") : t("registration.skillsPlaceholder")}
-                  rows={4}
-                  className="w-full pl-11 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder:text-slate-500 focus:border-emerald-500 focus:ring-emerald-500/20 focus:outline-none resize-none" />
-                
+              {role === "helper" ? (
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      Primary Skills
+                    </label>
+                    <select className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white appearance-none focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20">
+                      <option value="">Select your main skill...</option>
+                      <option value="cleaning">Cleaning & Housekeeping</option>
+                      <option value="cooking">Cooking & Culinary</option>
+                      <option value="childcare">Childcare & Nanny</option>
+                      <option value="elderly">Elderly Care</option>
+                      <option value="driving">Driving</option>
+                      <option value="gardening">Gardening & Maintenance</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      Contract Preference
+                    </label>
+                    <textarea
+                      placeholder="E.g., Live-in or Live-out, Mon-Fri 8AM-5PM, weekends off..."
+                      rows={3}
+                      className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 resize-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      Payment Expectation
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="E.g., 5000 ETB/month or Negotiable"
+                      className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:ring-emerald-500/20 h-12"
+                    />
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    {role === "employer" ? t("registration.requirements") : t("registration.skills")}
+                  </label>
+                  <div className="relative">
+                    <FileText className="absolute left-3 top-4 w-5 h-5 text-slate-500" />
+                    <textarea
+                      placeholder={role === "employer" ? t("registration.requirementsPlaceholder") : t("registration.skillsPlaceholder")}
+                      rows={4}
+                      className="w-full pl-11 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder:text-slate-500 focus:border-emerald-500 focus:ring-emerald-500/20 focus:outline-none resize-none" 
+                    />
+                  </div>
+                </div>
+              )}
             </>
           }
 
