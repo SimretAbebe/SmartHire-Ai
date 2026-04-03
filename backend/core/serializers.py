@@ -46,9 +46,33 @@ class LoginSerializer(serializers.Serializer):
         return data
 
 # Map frontend values identically skipping internal relations implicitly populated (like 'user' or 'created_by')
-from .models import MaidProfile
+from .models import MaidProfile, JobPosting
 
+# MaidProfile Serializer handling explicit 'user_id' inputs
 class MaidProfileSerializer(serializers.ModelSerializer):
+    # Maps incoming JSON {"user_id": 2} -> maps to 'user' foreign key cleanly
+    user_id = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(),
+        source='user',
+        write_only=True
+    )
+
     class Meta:
         model = MaidProfile
-        fields = ['skills', 'location', 'availability', 'salary', 'fayda_id']
+        fields = ['id', 'user_id', 'skills', 'location', 'availability', 'salary', 'fayda_id', 'created_by']
+        # Read-only because the View will explicitly assign 'created_by' from request token!
+        read_only_fields = ['created_by']
+
+# Job Posting Serializer handling output structure and explicit 'user_id' mapping
+class JobPostingSerializer(serializers.ModelSerializer):
+    # Similar to above, accepts JSON {"user_id": 1} seamlessly
+    user_id = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(),
+        source='user',
+        write_only=True
+    )
+
+    class Meta:
+        model = JobPosting
+        # Returning these mapped fields via GET json requirement
+        fields = ['id', 'user_id', 'required_skills', 'location', 'salary']
