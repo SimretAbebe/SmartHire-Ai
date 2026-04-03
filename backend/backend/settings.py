@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Third-party apps
     'rest_framework',
+    'rest_framework.authtoken', # For basic HTTP Token authentication
     'corsheaders',
     # Local apps
     'core',
@@ -97,6 +98,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny', # Adjust this for production
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication', # For stateless token verification
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ],
