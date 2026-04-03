@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { useTranslation } from "@/lib/i18n-context";
-import { ArrowRight, Home, Briefcase, Users, BadgeCheck, Phone, Mail, MapPin, User, FileText, Building, Shield, CheckCircle, X } from "lucide-react";
+import { ArrowRight, Home, Briefcase, Users, BadgeCheck, Phone, Mail, MapPin, User, FileText, Building, Shield, CheckCircle, X, Search, Loader2, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -15,6 +15,10 @@ export function RegistrationForm({ role, onBack }) {
   const [step, setStep] = useState(1);
   const [agreed, setAgreed] = useState(false);
   const [selectedSkills, setSelectedSkills] = useState([]);
+  const [isLoadingMatches, setIsLoadingMatches] = useState(false);
+  const [matches, setMatches] = useState(null);
+
+  const currentMaxStep = role === "employer" ? 4 : 3;
 
   // Data trackers for payload
   const [name, setName] = useState("");
@@ -80,6 +84,18 @@ export function RegistrationForm({ role, onBack }) {
     setSelectedSkills(selectedSkills.filter(id => id !== skillId));
   };
 
+  const handleFindMatches = () => {
+    setIsLoadingMatches(true);
+    setTimeout(() => {
+      setMatches([
+        { id: 1, name: "Aster T.", experience: "5 years experience", location: "Addis Ababa", match: 98, verified: true, skills: ["Cleaning", "Cooking", "Childcare"], image: "https://images.unsplash.com/photo-1523824275624-862ad8ef345b?w=400&q=80" },
+        { id: 2, name: "Mekdes A.", experience: "3 years experience", location: "Addis Ababa", match: 92, verified: true, skills: ["Cleaning", "Laundry"], image: "https://images.unsplash.com/photo-1616422325375-9270e599e1ee?w=400&q=80" },
+        { id: 3, name: "Helen B.", experience: "2 years experience", location: "Bahir Dar", match: 85, verified: false, skills: ["Cooking", "Elderly Care"], image: "https://images.unsplash.com/photo-1548175510-44026600c0f8?w=400&q=80" }
+      ]);
+      setIsLoadingMatches(false);
+    }, 1500);
+  };
+
   const roleConfig = {
     helper: {
       icon: Home,
@@ -130,7 +146,7 @@ export function RegistrationForm({ role, onBack }) {
 
       {/* Progress Steps */}
       <div className="flex items-center justify-center gap-2 mb-10">
-        {[1, 2, 3].map((s) =>
+        {Array.from({ length: currentMaxStep }, (_, i) => i + 1).map((s) =>
         <div key={s} className="flex items-center gap-2">
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all ${
           step >= s ?
@@ -139,7 +155,7 @@ export function RegistrationForm({ role, onBack }) {
           }>
               {step > s ? <CheckCircle className="w-4 h-4" /> : s}
             </div>
-            {s < 3 &&
+            {s < currentMaxStep &&
           <div className={`w-12 h-0.5 ${step > s ? "bg-emerald-500" : "bg-slate-800"}`} />
           }
           </div>
@@ -481,6 +497,92 @@ export function RegistrationForm({ role, onBack }) {
             </>
           }
 
+          {step === 4 && role === "employer" && (
+            <div className="space-y-6">
+              <div className="text-center mb-8">
+                <h3 className="text-2xl font-bold text-white mb-2">Find Your Best Match</h3>
+                <p className="text-slate-400">
+                  Based on your preferences, SmartHire AI will match you with the most suitable workers.
+                </p>
+              </div>
+
+              {!matches && !isLoadingMatches && (
+                <div className="flex justify-center py-8">
+                  <button
+                    type="button"
+                    onClick={handleFindMatches}
+                    className="inline-flex items-center justify-center gap-2 px-8 py-4 text-lg font-medium text-white bg-gradient-to-r from-teal-500 to-emerald-500 rounded-xl hover:from-teal-400 hover:to-emerald-400 focus:outline-none focus:ring-2 focus:ring-teal-500/50 shadow-lg shadow-teal-500/25 transition-all transform hover:-translate-y-1"
+                  >
+                    <Search className="w-5 h-5" />
+                    Find Matches
+                  </button>
+                </div>
+              )}
+
+              {isLoadingMatches && (
+                <div className="flex flex-col items-center justify-center py-12 space-y-4">
+                  <Loader2 className="w-12 h-12 text-teal-500 animate-spin" />
+                  <p className="text-teal-400 font-medium animate-pulse">Running AI Matching Algorithm...</p>
+                </div>
+              )}
+
+              {matches && (
+                <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+                  {matches.map((match) => (
+                    <div key={match.id} className="glass-card-solid p-5 rounded-xl border border-slate-700 hover:border-teal-500/50 transition-colors flex flex-col sm:flex-row gap-5 relative bg-slate-800/40">
+                      <div className="absolute top-4 right-4 flex flex-col items-end gap-2">
+                        <span className="inline-flex items-center justify-center px-3 py-1 bg-teal-500/10 text-teal-400 text-sm font-bold rounded-full border border-teal-500/20 shadow-[0_0_10px_rgba(20,184,166,0.2)]">
+                          {match.match}% Match
+                        </span>
+                        {match.verified && (
+                          <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-400">
+                            <BadgeCheck className="w-3.5 h-3.5" /> Verified
+                          </span>
+                        )}
+                      </div>
+                      
+                      <div className="shrink-0 relative">
+                        <img src={match.image} alt={match.name} className="w-20 h-20 rounded-xl object-cover border border-slate-600 shadow-md" />
+                      </div>
+                      
+                      <div className="flex-1 flex flex-col justify-between mt-2 sm:mt-0">
+                        <div>
+                          <h4 className="text-lg font-bold text-white mb-1">{match.name}</h4>
+                          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-400 mb-3">
+                            <span className="flex items-center gap-1.5"><Briefcase className="w-4 h-4" /> {match.experience}</span>
+                            <span className="flex items-center gap-1.5"><MapPin className="w-4 h-4" /> {match.location}</span>
+                          </div>
+                          
+                          <div className="flex flex-wrap gap-2 mb-4">
+                            {match.skills.map((skill, index) => (
+                              <span key={index} className="px-2.5 py-1 text-xs font-medium bg-slate-700/50 text-slate-300 rounded-md border border-slate-600">
+                                {skill}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-3 mt-auto">
+                          <Button type="button" className="flex-1 bg-teal-500 hover:bg-teal-600 text-white border-0 shadow-lg shadow-teal-500/20">
+                            Hire / Contact
+                          </Button>
+                          <Button type="button" variant="outline" className="flex-1 border-slate-600 text-slate-300 hover:text-white hover:bg-slate-700 bg-transparent">
+                            View Profile
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {matches.length === 0 && (
+                    <div className="text-center py-8 text-slate-400">
+                      No matches found. Try adjusting your preferences.
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Navigation Buttons */}
           <div className="flex gap-4 pt-4">
             {step > 1 &&
@@ -493,23 +595,27 @@ export function RegistrationForm({ role, onBack }) {
               </Button>
             }
             
-            {step < 3 ?
+            {step < currentMaxStep ?
             <Button
               type="button"
-              onClick={() => setStep(step + 1)}
-              className="flex-1 trust-button py-6 rounded-xl border-0">
+              onClick={() => {
+                if (step === 3 && !agreed) return;
+                setStep(step + 1);
+              }}
+              disabled={step === 3 && !agreed}
+              className="flex-1 trust-button py-6 rounded-xl border-0 disabled:opacity-50 disabled:cursor-not-allowed">
               
-                Continue
+                {step === 3 && role === "employer" ? "Verify ID & Continue" : "Continue"}
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button> :
 
             <Button
               type="submit"
-              disabled={!agreed}
+              disabled={step === 3 && !agreed}
               className="flex-1 trust-button py-6 rounded-xl border-0 disabled:opacity-50 disabled:cursor-not-allowed">
               
-                {t("registration.verifyId")}
-                <BadgeCheck className="w-5 h-5 ml-2" />
+                {role === "employer" && step === 4 ? "Complete Verification" : t("registration.verifyId")}
+                {role === "employer" && step === 4 ? <CheckCircle className="w-5 h-5 ml-2" /> : <BadgeCheck className="w-5 h-5 ml-2" />}
               </Button>
             }
           </div>
