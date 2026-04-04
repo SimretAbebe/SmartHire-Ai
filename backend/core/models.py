@@ -34,6 +34,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone = models.CharField(max_length=20, unique=True)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
     
+    # New fields strictly designated for Agent roles natively
+    fayda_id = models.CharField(max_length=12, blank=True, null=True)
+    tin_number = models.CharField(max_length=10, blank=True, null=True)
+    
     # Required by Django for administration and auth mechanisms
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)

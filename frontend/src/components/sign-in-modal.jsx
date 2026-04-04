@@ -17,18 +17,48 @@ export function SignInModal({ isOpen, onClose, onCreateAccount }) {
   const [loginMethod, setLoginMethod] = useState("phone");
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  // Natively execute Django verification API request 
+  const handleSignIn = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setErrorMsg("");
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        // Construct the strict schema expected by Django serializer
+        body: JSON.stringify({ phone, password })
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || data.errors?.phone?.[0] || "Invalid credentials.");
+      }
+      
+      // Store the secure DRF User token and metadata locally
+      localStorage.setItem("smarthire_token", data.token);
+      localStorage.setItem("smarthire_role", data.role);
+      localStorage.setItem("smarthire_name", data.name);
+      
+      setIsSubmitting(false);
+      // Successfully authenticated
+      onClose();
+      // Fast refresh updates UI components
+      window.location.reload(); 
+    } catch (err) {
+      setIsSubmitting(false);
+      setErrorMsg(err.message);
+    }
+  };
 
   if (!isOpen) return null;
 
-  const handleSignIn = (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      onClose();
-      // Handle actual login success here
-    }, 2000);
-  };
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -83,8 +113,13 @@ export function SignInModal({ isOpen, onClose, onCreateAccount }) {
           </button>
         </div>
 
-        {/* Form */}
+        {/* Form bound strictly to handleSignIn hook */}
         <form className="space-y-4" onSubmit={handleSignIn}>
+          {errorMsg && (
+             <div className="p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm">
+                {errorMsg}
+             </div>
+          )}
           {loginMethod === "email" ?
           <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">
@@ -108,7 +143,10 @@ export function SignInModal({ isOpen, onClose, onCreateAccount }) {
                 <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                 <Input
                 type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
                 placeholder="+251 9XX XXX XXX"
+                required
                 className="pl-11 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:ring-emerald-500/20" />
               
               </div>
@@ -123,6 +161,9 @@ export function SignInModal({ isOpen, onClose, onCreateAccount }) {
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
               <Input
                 type={showPassword ? "text" : "password"}
+                value={password}
+                required
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder={t("signIn.passwordPlaceholder")}
                 className="pl-11 pr-11 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-emerald-500 focus:ring-emerald-500/20" />
               
@@ -148,6 +189,7 @@ export function SignInModal({ isOpen, onClose, onCreateAccount }) {
             className="w-full trust-button py-6 rounded-xl border-0 text-base"
           >
             {t("signIn.signInButton")}
+          </Button>
           </Button>
         </form>
 

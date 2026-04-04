@@ -55,7 +55,8 @@ export default function SmartHireApp() {
             onGetStarted={() => setCurrentView("role-selection")}
             onHowItWorks={() => {
               document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" });
-            }} />
+            }}
+            />
           
             <div id="how-it-works">
               <HowItWorksSection onGetStarted={() => setCurrentView("role-selection")} />
