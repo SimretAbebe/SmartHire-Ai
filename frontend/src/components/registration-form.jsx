@@ -1,9 +1,10 @@
 
 import { useState } from "react";
 import { useTranslation } from "@/lib/i18n-context";
-import { ArrowRight, Home, Briefcase, Users, BadgeCheck, Phone, Mail, MapPin, User, FileText, Building, Shield, CheckCircle, X, Search, Loader2, Star } from "lucide-react";
+import { ArrowRight, Home, Briefcase, Users, BadgeCheck, Phone, Mail, MapPin, User, FileText, Building, Shield, CheckCircle, X, Search, Loader2, Star, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { AIContractModal } from "./ai-contract-modal";
 
 
 
@@ -21,8 +22,10 @@ export function RegistrationForm({ role, onBack }) {
   const [isPhotoUploading, setIsPhotoUploading] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isContractModalOpen, setIsContractModalOpen] = useState(false);
+  const [selectedMatch, setSelectedMatch] = useState(null);
 
-  const currentMaxStep = role === "employer" ? 4 : 3;
+  const currentMaxStep = (role === "employer" || role === "agent") ? 4 : 3;
 
   // Data trackers for payload
   const [name, setName] = useState("");
@@ -128,6 +131,11 @@ export function RegistrationForm({ role, onBack }) {
       setIsVerifying(false);
       setStep(step + 1);
     }, 2000);
+  };
+
+  const openContractModal = (match) => {
+    setSelectedMatch(match);
+    setIsContractModalOpen(true);
   };
 
 
@@ -595,7 +603,7 @@ export function RegistrationForm({ role, onBack }) {
               {matches && (
                 <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
                   {matches.map((match) => (
-                    <div key={match.id} className="glass-card-solid p-5 rounded-xl border border-slate-700 hover:border-teal-500/50 transition-colors flex flex-col sm:flex-row gap-5 relative bg-slate-800/40">
+                    <div key={match.id} className="glass-card-solid p-5 rounded-xl border border-slate-700 hover:border-teal-500/50 transition-colors flex flex-col sm:flex-row gap-5 relative bg-slate-800/40 group/card">
                       <div className="absolute top-4 right-4 flex flex-col items-end gap-2">
                         <span className="inline-flex items-center justify-center px-3 py-1 bg-teal-500/10 text-teal-400 text-sm font-bold rounded-full border border-teal-500/20 shadow-[0_0_10px_rgba(20,184,166,0.2)]">
                           {match.match}% Match
@@ -608,12 +616,22 @@ export function RegistrationForm({ role, onBack }) {
                       </div>
                       
                       <div className="shrink-0 relative">
-                        <img src={match.image} alt={match.name} className="w-20 h-20 rounded-xl object-cover border border-slate-600 shadow-md" />
+                        <img src={match.image} alt={match.name} className="w-20 h-20 rounded-xl object-cover border border-slate-600 shadow-md transition-transform group-hover/card:scale-105" />
                       </div>
                       
                       <div className="flex-1 flex flex-col justify-between mt-2 sm:mt-0">
                         <div>
-                          <h4 className="text-lg font-bold text-white mb-1">{match.name}</h4>
+                          <div className="flex items-center gap-2 mb-1">
+                            <h4 className="text-lg font-bold text-white">{match.name}</h4>
+                            <button
+                              type="button"
+                              onClick={() => openContractModal(match)}
+                              className="inline-flex items-center gap-1 px-2 py-0.5 bg-gradient-to-r from-teal-500/20 to-emerald-500/20 border border-teal-500/30 rounded-md text-[10px] font-bold text-teal-400 hover:text-white hover:border-teal-400/50 transition-all uppercase tracking-wider"
+                            >
+                              <Sparkles className="w-2.5 h-2.5" />
+                              Generate AI Contract
+                            </button>
+                          </div>
                           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-400 mb-3">
                             <span className="flex items-center gap-1.5"><User className="w-4 h-4" /> {match.age} years old</span>
                             <span className="flex items-center gap-1.5"><Briefcase className="w-4 h-4" /> {match.experience}</span>
@@ -647,6 +665,153 @@ export function RegistrationForm({ role, onBack }) {
                   )}
                 </div>
               )}
+            </div>
+          )}
+
+          {step === 4 && role === "agent" && (
+            <div className="space-y-6">
+              <h3 className="text-lg font-semibold text-white mb-4">Helper Personal Information</h3>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    {t("registration.fullName")}
+                  </label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                    <Input
+                      type="text"
+                      placeholder={t("registration.fullNamePlaceholder")}
+                      className="pl-11 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-cyan-500/20 h-12" />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    {t("registration.phone")}
+                  </label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                    <Input
+                      type="tel"
+                      placeholder={t("registration.phonePlaceholder")}
+                      className="pl-11 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-cyan-500/20 h-12" />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    {t("registration.age")}
+                  </label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                    <Input
+                      type="number"
+                      placeholder={t("registration.agePlaceholder")}
+                      className="pl-11 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-cyan-500/20 h-12"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    {t("registration.profilePhoto")}
+                  </label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                    <div className="flex items-center gap-4">
+                      <input
+                        type="file"
+                        accept=".jpg,.jpeg,.png"
+                        onChange={handlePhotoUpload}
+                        className="flex-1 pl-11 py-2.5 bg-slate-800/50 border border-slate-700 rounded-lg text-white file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-cyan-500/10 file:text-cyan-500 hover:file:bg-cyan-500/20 transition-colors focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20" 
+                      />
+                      {isPhotoUploading && (
+                        <div className="flex items-center gap-2 text-cyan-400 text-sm animate-pulse">
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    {t("registration.location")}
+                  </label>
+                  <div className="relative">
+                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                    <Input
+                      type="text"
+                      placeholder={t("registration.locationPlaceholder")}
+                      className="pl-11 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-cyan-500/20 h-12" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-6 border-t border-slate-800">
+                <h3 className="text-lg font-semibold text-white mb-4">Skills & Experience</h3>
+                
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      {t("registration.primarySkills")}
+                    </label>
+                    <div className="space-y-3">
+                      <select 
+                        onChange={handleSkillSelect}
+                        className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white appearance-none focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20"
+                        defaultValue=""
+                      >
+                        <option value="" disabled>{t("registration.primarySkillsPlaceholder")}</option>
+                        {availableSkills.map(skill => (
+                          <option key={skill.id} value={skill.id} disabled={selectedSkills.includes(skill.id)}>
+                            {skill.label}
+                          </option>
+                        ))}
+                      </select>
+                      
+                      {selectedSkills.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {selectedSkills.map(skillId => {
+                            const skill = availableSkills.find(s => s.id === skillId);
+                            return (
+                              <span key={skillId} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded-full text-sm">
+                                {skill?.label}
+                                <button type="button" onClick={() => removeSkill(skillId)} className="hover:text-white transition-colors focus:outline-none">
+                                  <X className="w-3.5 h-3.5" />
+                                </button>
+                              </span>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      {t("registration.contractPreference")}
+                    </label>
+                    <textarea
+                      placeholder={t("registration.contractPreferencePlaceholder")}
+                      rows={3}
+                      className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 resize-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      {t("registration.paymentExpectation")}
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder={t("registration.paymentExpectationPlaceholder")}
+                      className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-cyan-500/20 h-12"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
@@ -693,6 +858,13 @@ export function RegistrationForm({ role, onBack }) {
           </div>
         </form>
       </div>
+
+      {/* AI Contract Modal */}
+      <AIContractModal 
+        isOpen={isContractModalOpen} 
+        onClose={() => setIsContractModalOpen(false)} 
+        selectedParty={selectedMatch} 
+      />
     </div>);
 
 }

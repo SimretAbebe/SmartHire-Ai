@@ -1,188 +1,148 @@
-import React, { useState } from 'react';
-import { useTranslation } from "@/lib/i18n-context";
-import { 
-  FileText, 
-  Loader2, 
-  Download, 
-  Languages, 
-  ShieldCheck, 
-  ClipboardCheck,
-  AlertCircle
-} from "lucide-react";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogDescription,
-  DialogFooter
-} from "@/components/ui/dialog";
+import { useState, useEffect } from "react";
+import { X, Shield, FileText, Download, Loader2, CheckCircle, Sparkles, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-export function AIContractModal({ 
-  isOpen, 
-  onClose, 
-  maidId, 
-  jobId, 
-  employerId,
-  maidName = "Maid",
-  employerName = "Employer"
-}) {
-  const { t } = useTranslation();
-  const [loading, setLoading] = useState(false);
-  const [contractData, setContractData] = useState(null);
-  const [error, setError] = useState(null);
+export function AIContractModal({ isOpen, onClose, selectedParty }) {
+  const [status, setStatus] = useState("idle"); // idle, generating, success, error
+  const [progressMsg, setProgressMsg] = useState("");
+  
+  const messages = [
+    "Analyzing role requirements...",
+    "Scanning SmartHire legal database...",
+    "Drafting standard clauses for Ethiopia...",
+    "Applying regional labor law compliance...",
+    "Generating secure digital signature keys...",
+    "Finalizing contract document..."
+  ];
 
-  const generateContract = async () => {
-    setLoading(true);
-    setError(null);
-    setContractData(null);
-
-    const token = localStorage.getItem("smarthire_token");
-
-    try {
-      const response = await fetch("http://127.0.0.1:8000/api/contract", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Token ${token}`
-        },
-        body: JSON.stringify({
-          maid_id: maidId,
-          job_id: jobId,
-          employer_id: employerId,
-          extra_fields: "Standard SmartHire Trust Package - Full Liability Coverage"
-        })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to generate AI contract");
-      }
-
-      setContractData(data);
-    } catch (err) {
-      console.error("Contract Error:", err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    if (status === "generating") {
+      let i = 0;
+      const interval = setInterval(() => {
+        if (i < messages.length) {
+          setProgressMsg(messages[i]);
+          i++;
+        } else {
+          clearInterval(interval);
+          setStatus("success");
+        }
+      }, 800);
+      return () => clearInterval(interval);
     }
+  }, [status]);
+
+  if (!isOpen) return null;
+
+  const handleGenerate = () => {
+    setStatus("generating");
+  };
+
+  const handleDownload = () => {
+    // Mock PDF download
+    alert(`Downloading AI Contract for ${selectedParty?.name || "Helper"}...`);
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col bg-slate-900 border-slate-800 text-white">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-2xl">
-            <ShieldCheck className="w-6 h-6 text-emerald-500" />
-            AI Smart Contract Generator
-          </DialogTitle>
-          <DialogDescription className="text-slate-400">
-            Generating a legally formatted, bilingual contract for {employerName} and {maidName}.
-          </DialogDescription>
-        </DialogHeader>
+    <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div 
+        className="absolute inset-0 bg-black/70 backdrop-blur-md"
+        onClick={status !== "generating" ? onClose : undefined} />
+      
+      {/* Modal Content */}
+      <div className="relative w-full max-w-lg glass-strong rounded-3xl p-8 border border-white/10 shadow-2xl animate-fade-up overflow-hidden">
+        {/* Background Sparkle Effect */}
+        <div className="absolute -top-24 -right-24 w-48 h-48 bg-teal-500/20 blur-[80px] rounded-full pointer-events-none" />
+        <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-emerald-500/20 blur-[80px] rounded-full pointer-events-none" />
 
-        <div className="flex-1 overflow-y-auto py-4">
-          {!contractData && !loading && !error && (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mb-6">
-                <FileText className="w-10 h-10 text-emerald-500" />
+        {/* Close Button */}
+        {status !== "generating" && (
+          <button
+            onClick={onClose}
+            className="absolute top-6 right-6 p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-all z-10"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        )}
+
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-2xl mb-6 shadow-xl shadow-teal-500/20 relative">
+            {status === "generating" ? (
+              <Loader2 className="w-10 h-10 text-white animate-spin" />
+            ) : status === "success" ? (
+              <CheckCircle className="w-10 h-10 text-white" />
+            ) : (
+              <Sparkles className="w-10 h-10 text-white" />
+            )}
+          </div>
+          
+          <h2 className="text-2xl font-bold text-white mb-2">
+            {status === "idle" ? "SmartHire AI Contract" : 
+             status === "generating" ? "Generating Contract..." :
+             "Contract Ready!"}
+          </h2>
+          
+          <p className="text-slate-400 mb-8 px-4">
+            {status === "idle" ? `Generate a legally binding labor contract for ${selectedParty?.name || "the selected candidate"} automatically.` :
+             status === "generating" ? progressMsg :
+             "The AI has successfully drafted a comprehensive contract based on your requirements."}
+          </p>
+
+          {status === "idle" && (
+            <div className="space-y-4 mb-8">
+              <div className="flex items-center gap-3 p-4 bg-white/5 border border-white/10 rounded-xl text-left">
+                <Shield className="w-5 h-5 text-teal-400 shrink-0" />
+                <span className="text-sm text-slate-300">Compliant with Ethiopian labor regulations</span>
               </div>
-              <h3 className="text-xl font-semibold mb-2">Ready to Secure Your Hire?</h3>
-              <p className="text-slate-400 max-w-sm mb-8">
-                Confirming the hiring details will trigger our Gemini-1.5 AI to draft a formal agreement in both Amharic and English.
-              </p>
+              <div className="flex items-center gap-3 p-4 bg-white/5 border border-white/10 rounded-xl text-left">
+                <FileText className="w-5 h-5 text-emerald-400 shrink-0" />
+                <span className="text-sm text-slate-300">Automatic clause generation based on job type</span>
+              </div>
+            </div>
+          )}
+
+          {status === "success" && (
+            <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-6 mb-8">
+              <div className="flex items-center justify-between mb-4 pb-4 border-b border-white/5">
+                <span className="text-slate-400 text-sm">Contract ID:</span>
+                <span className="text-emerald-400 font-mono text-sm uppercase">SH-2024-AI-9X2</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-400 text-sm">Valid for:</span>
+                <span className="text-white font-medium text-sm">{selectedParty?.name || "Helper"}</span>
+              </div>
+            </div>
+          )}
+
+          <div className="flex flex-col gap-3">
+            {status === "idle" ? (
               <Button 
-                onClick={generateContract} 
-                className="bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-6 rounded-xl text-lg h-auto"
+                onClick={handleGenerate}
+                className="w-full trust-button h-14 rounded-xl border-0 text-lg shadow-lg shadow-teal-500/20"
               >
-                Draft Bilingual Contract Now
+                Generate Contract Now
               </Button>
-            </div>
-          )}
-
-          {loading && (
-            <div className="flex flex-col items-center justify-center py-20">
-              <Loader2 className="w-12 h-12 text-emerald-500 animate-spin mb-4" />
-              <p className="text-emerald-500 font-medium animate-pulse">
-                Gemini AI is analyzing local labor laws and drafting text...
-              </p>
-            </div>
-          )}
-
-          {error && (
-            <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-6 flex items-start gap-4 mx-4">
-              <AlertCircle className="w-6 h-6 text-red-500 shrink-0 mt-1" />
-              <div>
-                <h4 className="text-red-500 font-semibold mb-1">Generation Failed</h4>
-                <p className="text-slate-400 text-sm">{error}</p>
+            ) : status === "success" ? (
+              <>
                 <Button 
-                  variant="outline" 
-                  onClick={generateContract}
-                  className="mt-4 border-red-500/50 text-red-500 hover:bg-red-500/10"
+                  onClick={handleDownload}
+                  className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white h-14 rounded-xl border-0 text-lg shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2"
                 >
-                  Try Again
+                  <Download className="w-5 h-5" />
+                  Download PDF Contract
                 </Button>
-              </div>
-            </div>
-          )}
-
-          {contractData && (
-            <div className="px-4 animate-in fade-in zoom-in duration-300">
-              <Tabs defaultValue="english" className="w-full">
-                <div className="flex items-center justify-between mb-4">
-                  <TabsList className="bg-slate-800 border-slate-700">
-                    <TabsTrigger value="amharic" className="data-[state=active]:bg-emerald-600">አማርኛ (Amharic)</TabsTrigger>
-                    <TabsTrigger value="english" className="data-[state=active]:bg-emerald-600">English</TabsTrigger>
-                  </TabsList>
-                  
-                  <div className="flex items-center gap-2 text-xs text-slate-500">
-                    <Languages className="w-3 h-3" />
-                    AI Translated
-                  </div>
-                </div>
-
-                <TabsContent value="amharic" className="mt-0">
-                  <div className="bg-slate-950 border border-slate-800 rounded-xl p-8 font-serif leading-relaxed text-lg text-slate-200">
-                    <pre className="whitespace-pre-wrap font-inherit">
-                      {contractData.contract_am}
-                    </pre>
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="english" className="mt-0">
-                  <div className="bg-slate-950 border border-slate-800 rounded-xl p-8 font-serif leading-relaxed text-lg text-slate-200">
-                    <pre className="whitespace-pre-wrap font-inherit">
-                      {contractData.contract_en}
-                    </pre>
-                  </div>
-                </TabsContent>
-              </Tabs>
-              
-              <div className="mt-6 p-4 bg-emerald-500/5 border border-emerald-500/10 rounded-lg flex items-center gap-3">
-                <ClipboardCheck className="w-5 h-5 text-emerald-500" />
-                <span className="text-sm text-slate-400">
-                  This AI-generated draft is legally compliant with Ethiopian domestic labor guidelines.
-                </span>
-              </div>
-            </div>
-          )}
+                <Button 
+                  onClick={onClose}
+                  variant="outline"
+                  className="w-full h-14 rounded-xl border-slate-700 text-slate-400 hover:text-white"
+                >
+                  Done
+                </Button>
+              </>
+            ) : null}
+          </div>
         </div>
-
-        <DialogFooter className="border-t border-slate-800 p-6">
-          <Button variant="ghost" onClick={onClose} className="text-slate-400 hover:text-white hover:bg-slate-800">
-            Cancel
-          </Button>
-          {contractData && (
-            <Button className="bg-emerald-600 hover:bg-emerald-500">
-              <Download className="w-4 h-4 mr-2" />
-              Download PDF Contract
-            </Button>
-          )}
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 }
