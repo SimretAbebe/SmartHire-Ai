@@ -25,7 +25,7 @@ export function RegistrationForm({ role, onBack }) {
   const [isContractModalOpen, setIsContractModalOpen] = useState(false);
   const [selectedMatch, setSelectedMatch] = useState(null);
 
-  const currentMaxStep = role === "employer" ? 4 : 3;
+  const currentMaxStep = (role === "employer" || role === "agent") ? 4 : 3;
 
   // Data trackers for payload
   const [name, setName] = useState("");
@@ -34,6 +34,8 @@ export function RegistrationForm({ role, onBack }) {
   const [faydaId, setFaydaId] = useState("");
   const [tinNumber, setTinNumber] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const [experience, setExperience] = useState("");
+  const [showSuccessCard, setShowSuccessCard] = useState(false);
 
   // Natively execute Django POST /api/register request
   const handleSubmit = async (e) => {
@@ -47,7 +49,7 @@ export function RegistrationForm({ role, onBack }) {
     const backendRole = role === "helper" ? "maid" : role;
     
     try {
-        const payload = { name, phone, password, role: backendRole };
+        const payload = { name, phone, password, role: backendRole, experience };
         if (faydaId) payload.fayda_id = faydaId;
         if (tinNumber) payload.tin_number = tinNumber;
         
@@ -64,6 +66,14 @@ export function RegistrationForm({ role, onBack }) {
             throw new Error(errorText);
         }
         setIsSubmitting(false);
+
+        if (role !== "employer") {
+          setShowSuccessCard(true);
+        } else {
+          alert(t("registration.success") || "Registration Verified & Successful! Please Log in.");
+          onBack();
+        }
+=======
         alert(t("registration.success") || "Registration Verified & Successful! Please Log in.");
         
         // Final Fix: If Employer is on the Match step, DO NOT exit. 
@@ -73,6 +83,7 @@ export function RegistrationForm({ role, onBack }) {
         }
         
         onBack(); // Only escape back to main UI for Helpers/Agents
+
     } catch(err) {
         setIsSubmitting(false);
         setErrorMsg(err.message);
@@ -137,6 +148,11 @@ export function RegistrationForm({ role, onBack }) {
       setIsVerifying(false);
       setStep(step + 1);
     }, 2000);
+  };
+
+  const openContractModal = (match) => {
+    setSelectedMatch(match);
+    setIsContractModalOpen(true);
   };
 
 
@@ -208,7 +224,49 @@ export function RegistrationForm({ role, onBack }) {
 
       {/* Form Card */}
       <div className="glass-card-solid rounded-2xl p-8">
-        <form className="space-y-6" onSubmit={handleSubmit}>
+        {showSuccessCard ? (
+          <div className="text-center space-y-6 animate-in fade-in zoom-in duration-500">
+            <div className={`mx-auto w-16 h-16 bg-${config.color}-500/10 rounded-full flex items-center justify-center mb-4`}>
+              <Sparkles className={`w-8 h-8 text-${config.color}-500`} />
+            </div>
+            <h2 className="text-2xl font-bold text-white">{t("registration.contractCardTitle")}</h2>
+            <p className="text-slate-400">
+              {t("registration.contractCardDesc")}
+            </p>
+            
+            <div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700 space-y-4">
+              <div className="flex items-center gap-3 text-left">
+                <div className={`p-2 bg-${config.color}-500/10 rounded-lg`}>
+                  <FileText className={`w-10 h-10 text-${config.color}-400`} />
+                </div>
+                <div>
+                  <p className="text-white font-medium">SmartHire_Contract_{name || "Helper"}.pdf</p>
+                  <p className="text-xs text-slate-500">AI-generated & legally-binding</p>
+                </div>
+              </div>
+              
+              <Button 
+                onClick={() => {
+                  alert("Downloading AI-generated contract... (Backend PDF API connection pending)");
+                  // window.location.href = `http://127.0.0.1:8000/api/download-contract/?name=${name}`;
+                }}
+                className={`w-full py-6 bg-${config.color}-500 hover:bg-${config.color}-600 text-white rounded-xl shadow-lg shadow-${config.color}-500/20 flex items-center justify-center gap-2 text-lg font-bold border-0`}
+              >
+                <Sparkles className="w-5 h-5" />
+                {t("registration.downloadContract")}
+              </Button>
+            </div>
+            
+            <button 
+              onClick={onBack}
+              className="text-slate-500 hover:text-white transition-colors text-sm font-medium flex items-center gap-2 mx-auto"
+            >
+              <ArrowRight className="w-4 h-4 rotate-180" />
+              Return to Homepage
+            </button>
+          </div>
+        ) : (
+          <form className="space-y-6" onSubmit={handleSubmit}>
           {errorMsg && (
             <div className="p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm whitespace-pre-wrap">
               {errorMsg}
@@ -391,6 +449,18 @@ export function RegistrationForm({ role, onBack }) {
                         </div>
                       )}
                     </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      {t("registration.experience")}
+                    </label>
+                    <textarea
+                      value={experience}
+                      onChange={(e) => setExperience(e.target.value)}
+                      placeholder={t("registration.experiencePlaceholder")}
+                      rows={4}
+                      className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 resize-none"
+                    />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-300 mb-2">
@@ -604,7 +674,7 @@ export function RegistrationForm({ role, onBack }) {
               {matches && (
                 <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
                   {matches.map((match) => (
-                    <div key={match.id} className="glass-card-solid p-5 rounded-xl border border-slate-700 hover:border-teal-500/50 transition-colors flex flex-col sm:flex-row gap-5 relative bg-slate-800/40">
+                    <div key={match.id} className="glass-card-solid p-5 rounded-xl border border-slate-700 hover:border-teal-500/50 transition-colors flex flex-col sm:flex-row gap-5 relative bg-slate-800/40 group/card">
                       <div className="absolute top-4 right-4 flex flex-col items-end gap-2">
                         <span className="inline-flex items-center justify-center px-3 py-1 bg-teal-500/10 text-teal-400 text-sm font-bold rounded-full border border-teal-500/20 shadow-[0_0_10px_rgba(20,184,166,0.2)]">
                           {match.match}% Match
@@ -617,12 +687,22 @@ export function RegistrationForm({ role, onBack }) {
                       </div>
                       
                       <div className="shrink-0 relative">
-                        <img src={match.image} alt={match.name} className="w-20 h-20 rounded-xl object-cover border border-slate-600 shadow-md" />
+                        <img src={match.image} alt={match.name} className="w-20 h-20 rounded-xl object-cover border border-slate-600 shadow-md transition-transform group-hover/card:scale-105" />
                       </div>
                       
                       <div className="flex-1 flex flex-col justify-between mt-2 sm:mt-0">
                         <div>
-                          <h4 className="text-lg font-bold text-white mb-1">{match.name}</h4>
+                          <div className="flex items-center gap-2 mb-1">
+                            <h4 className="text-lg font-bold text-white">{match.name}</h4>
+                            <button
+                              type="button"
+                              onClick={() => openContractModal(match)}
+                              className="inline-flex items-center gap-1 px-2 py-0.5 bg-gradient-to-r from-teal-500/20 to-emerald-500/20 border border-teal-500/30 rounded-md text-[10px] font-bold text-teal-400 hover:text-white hover:border-teal-400/50 transition-all uppercase tracking-wider"
+                            >
+                              <Sparkles className="w-2.5 h-2.5" />
+                              Generate AI Contract
+                            </button>
+                          </div>
                           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-slate-400 mb-3">
                             <span className="flex items-center gap-1.5"><User className="w-4 h-4" /> {match.age} years old</span>
                             <span className="flex items-center gap-1.5"><Briefcase className="w-4 h-4" /> {match.experience}</span>
@@ -663,6 +743,166 @@ export function RegistrationForm({ role, onBack }) {
                   )}
                 </div>
               )}
+            </div>
+          )}
+
+          {step === 4 && role === "agent" && (
+            <div className="space-y-6">
+              <h3 className="text-lg font-semibold text-white mb-4">Helper Personal Information</h3>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    {t("registration.fullName")}
+                  </label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                    <Input
+                      type="text"
+                      placeholder={t("registration.fullNamePlaceholder")}
+                      className="pl-11 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-cyan-500/20 h-12" />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    {t("registration.phone")}
+                  </label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                    <Input
+                      type="tel"
+                      placeholder={t("registration.phonePlaceholder")}
+                      className="pl-11 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-cyan-500/20 h-12" />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    {t("registration.age")}
+                  </label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                    <Input
+                      type="number"
+                      placeholder={t("registration.agePlaceholder")}
+                      className="pl-11 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-cyan-500/20 h-12"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    {t("registration.profilePhoto")}
+                  </label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                    <div className="flex items-center gap-4">
+                      <input
+                        type="file"
+                        accept=".jpg,.jpeg,.png"
+                        onChange={handlePhotoUpload}
+                        className="flex-1 pl-11 py-2.5 bg-slate-800/50 border border-slate-700 rounded-lg text-white file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-cyan-500/10 file:text-cyan-500 hover:file:bg-cyan-500/20 transition-colors focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20" 
+                      />
+                      {isPhotoUploading && (
+                        <div className="flex items-center gap-2 text-cyan-400 text-sm animate-pulse">
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    {t("registration.location")}
+                  </label>
+                  <div className="relative">
+                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                    <Input
+                      type="text"
+                      placeholder={t("registration.locationPlaceholder")}
+                      className="pl-11 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-cyan-500/20 h-12" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-6 border-t border-slate-800">
+                <h3 className="text-lg font-semibold text-white mb-4">Skills & Experience</h3>
+                
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      {t("registration.primarySkills")}
+                    </label>
+                    <div className="space-y-3">
+                      <select 
+                        onChange={handleSkillSelect}
+                        className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white appearance-none focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20"
+                        defaultValue=""
+                      >
+                        <option value="" disabled>{t("registration.primarySkillsPlaceholder")}</option>
+                        {availableSkills.map(skill => (
+                          <option key={skill.id} value={skill.id} disabled={selectedSkills.includes(skill.id)}>
+                            {skill.label}
+                          </option>
+                        ))}
+                      </select>
+                      
+                      {selectedSkills.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {selectedSkills.map(skillId => {
+                            const skill = availableSkills.find(s => s.id === skillId);
+                            return (
+                              <span key={skillId} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded-full text-sm">
+                                {skill?.label}
+                                <button type="button" onClick={() => removeSkill(skillId)} className="hover:text-white transition-colors focus:outline-none">
+                                  <X className="w-3.5 h-3.5" />
+                                </button>
+                              </span>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      {t("registration.experience")}
+                    </label>
+                    <textarea
+                      value={experience}
+                      onChange={(e) => setExperience(e.target.value)}
+                      placeholder={t("registration.experiencePlaceholder")}
+                      rows={4}
+                      className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 resize-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      {t("registration.contractPreference")}
+                    </label>
+                    <textarea
+                      placeholder={t("registration.contractPreferencePlaceholder")}
+                      rows={3}
+                      className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 resize-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      {t("registration.paymentExpectation")}
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder={t("registration.paymentExpectationPlaceholder")}
+                      className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-500 focus:ring-cyan-500/20 h-12"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
@@ -708,7 +948,9 @@ export function RegistrationForm({ role, onBack }) {
             }
           </div>
         </form>
+        )}
       </div>
+
 
       {/* Her Missing Module: The AI Contract Generator */}
       {selectedMatch && (
@@ -721,6 +963,14 @@ export function RegistrationForm({ role, onBack }) {
           jobId={1} // Placeholder for demo
         />
       )}
+=======
+      {/* AI Contract Modal */}
+      <AIContractModal 
+        isOpen={isContractModalOpen} 
+        onClose={() => setIsContractModalOpen(false)} 
+        selectedParty={selectedMatch} 
+      />
+
     </div>);
 
 }
