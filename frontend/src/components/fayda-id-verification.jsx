@@ -47,7 +47,7 @@ function validateVerhoeff(numStr) {
 
 export default function FaydaIdVerification() {
   const [faydaId, setFaydaId] = useState('');
-  const [status, setStatus] = useState('idle'); // 'idle', 'valid', 'invalid', 'incomplete'
+  const [status, setStatus] = useState('idle'); // 'idle', 'valid', 'invalid', 'incomplete', 'verifying'
 
   const handleInputChange = (e) => {
     // Only allow digits and restrict to 12 characters
@@ -59,9 +59,13 @@ export default function FaydaIdVerification() {
     } else if (rawValue.length < 12) {
       setStatus('incomplete');
     } else {
-      // Validate full 12-digit ID
-      const isValid = validateVerhoeff(rawValue);
-      setStatus(isValid ? 'valid' : 'invalid');
+      // Start simulated server-side verification after all 12 digits are entered
+      setStatus('verifying');
+      
+      setTimeout(() => {
+        const isValid = validateVerhoeff(rawValue);
+        setStatus(isValid ? 'valid' : 'invalid');
+      }, 1500);
     }
   };
 
@@ -95,7 +99,7 @@ export default function FaydaIdVerification() {
           onChange={handleInputChange}
           placeholder="0000 0000 0000"
           className={`w-full px-5 py-4 text-2xl font-mono tracking-widest bg-slate-50 dark:bg-slate-950/50 outline-none rounded-2xl border-2 transition-all duration-300 placeholder:text-slate-300 dark:placeholder:text-slate-700
-            ${status === 'idle' || status === 'incomplete' 
+            ${status === 'idle' || status === 'incomplete' || status === 'verifying'
               ? 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 focus:border-blue-500 dark:focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20' 
               : ''}
             ${status === 'valid' 
@@ -123,7 +127,7 @@ export default function FaydaIdVerification() {
       <div className="mt-6 flex flex-col gap-2 relative">
         <div className={`flex items-start gap-3 p-4 rounded-xl transition-all duration-300 border
           ${status === 'idle' ? 'bg-slate-50 dark:bg-slate-800/50 border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-400' : ''}
-          ${status === 'incomplete' ? 'bg-blue-50 dark:bg-blue-950/30 border-blue-100 dark:border-blue-900/50 text-blue-700 dark:text-blue-400' : ''}
+          ${status === 'incomplete' || status === 'verifying' ? 'bg-blue-50 dark:bg-blue-950/30 border-blue-100 dark:border-blue-900/50 text-blue-700 dark:text-blue-400' : ''}
           ${status === 'valid' ? 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-100 dark:border-emerald-900/50 text-emerald-700 dark:text-emerald-400' : ''}
           ${status === 'invalid' ? 'bg-rose-50 dark:bg-rose-950/30 border-rose-100 dark:border-rose-900/50 text-rose-700 dark:text-rose-400' : ''}
         `}>
@@ -136,6 +140,7 @@ export default function FaydaIdVerification() {
           <div className="text-sm font-medium leading-relaxed">
             {status === 'idle' && 'Please enter your unique 12-digit Fayda National ID to verify its authenticity.'}
             {status === 'incomplete' && `Keep typing... (${faydaId.length}/12 digits entered)`}
+            {status === 'verifying' && 'Communicating with the national ID service...'}
             {status === 'valid' && 'Success! This Fayda ID passes mathematical verification and appears to be globally valid.'}
             {status === 'invalid' && 'Warning: This Fayda ID failed the checksum validation. Please check for typos or incorrect digits.'}
           </div>
