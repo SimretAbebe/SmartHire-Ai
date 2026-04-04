@@ -22,7 +22,7 @@ SmartHire AI is a full-stack, AI-driven platform designed to revolutionize the d
 | :--- | :--- |
 | **Backend** | Django 5 + DRF (stateless API) |
 | **Frontend** | React 18 + Vite (High-performance UI) |
-| **AI Engine** | Google Gemini 2.0 Flash + SheCodes AI (Fallback) |
+| **AI Engine** | Google Gemini 2.0 Flash |
 | **Database** | PostgreSQL / SQLite3 |
 | **Styling** | Vanilla CSS + Tailwind + Framer Motion |
 
