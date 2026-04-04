@@ -5,3 +5,5 @@ python-dotenv
 django-cors-headers
 dj-database-url
 google-generativeai
+whitenoise
+gunicorn

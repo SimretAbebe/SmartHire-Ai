@@ -44,7 +44,7 @@ export function RegistrationForm({ role, onBack }) {
         if (faydaId) payload.fayda_id = faydaId;
         if (tinNumber) payload.tin_number = tinNumber;
         
-        const res = await fetch("http://127.0.0.1:8000/api/register", {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/register`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)

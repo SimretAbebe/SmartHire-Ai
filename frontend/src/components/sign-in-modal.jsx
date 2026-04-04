@@ -28,7 +28,7 @@ export function SignInModal({ isOpen, onClose, onCreateAccount }) {
     setErrorMsg("");
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/login", {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         // Construct the strict schema expected by Django serializer
