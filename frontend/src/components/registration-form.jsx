@@ -60,21 +60,16 @@ export function RegistrationForm({ role, onBack }) {
             if (data.errors) errorText = JSON.stringify(data.errors);
             throw new Error(errorText);
         }
-        
-        alert("Registration Verified & Successful!");
+        setIsSubmitting(false);
+        alert(t("registration.success") || "Registration Verified & Successful! Please Log in.");
         
         // Final Fix: If Employer is on the Match step, DO NOT exit. 
         // Let them actually see and click on the worker results!
         if (role === "employer" && step === 4) {
-            // Stay on the matches page
-            return; 
+            return; // Stay on the matches page
         }
         
         onBack(); // Only escape back to main UI for Helpers/Agents
-=======
-        setIsSubmitting(false);
-        alert(t("registration.success") || "Registration Verified & Successful! Please Log in.");
-        onBack(); // Escapes back to main UI so they can Login
     } catch(err) {
         setIsSubmitting(false);
         setErrorMsg(err.message);
@@ -693,19 +688,12 @@ export function RegistrationForm({ role, onBack }) {
 
             <Button
               type="submit"
-              disabled={isLoadingMatches || (step === 3 && !agreed)}
+              loading={isSubmitting || isLoadingMatches}
+              disabled={(step === 3 && !agreed) || isSubmitting || isLoadingMatches}
               className="flex-1 trust-button py-6 rounded-xl border-0 disabled:opacity-50 disabled:cursor-not-allowed">
               
                 {role === "employer" && step === 4 ? (isLoadingMatches ? "Searching..." : "Complete Verification") : t("registration.verifyId")}
-                {role === "employer" && step === 4 ? <CheckCircle className="w-5 h-5 ml-2" /> : <BadgeCheck className="w-5 h-5 ml-2" />}
-=======
-              loading={isSubmitting}
-              disabled={(step === 3 && !agreed) || isSubmitting}
-              className="flex-1 trust-button py-6 rounded-xl border-0 disabled:opacity-50 disabled:cursor-not-allowed">
-              
-                {role === "employer" && step === 4 ? "Complete Verification" : t("registration.verifyId")}
-                {!isSubmitting && (role === "employer" && step === 4 ? <CheckCircle className="w-5 h-5 ml-2" /> : <BadgeCheck className="w-5 h-5 ml-2" />)}
-
+                {(!isSubmitting && !isLoadingMatches) && (role === "employer" && step === 4 ? <CheckCircle className="w-5 h-5 ml-2" /> : <BadgeCheck className="w-5 h-5 ml-2" />)}
               </Button>
             }
           </div>
