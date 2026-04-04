@@ -16,7 +16,19 @@ export function SignInModal({ isOpen, onClose, onCreateAccount }) {
   const [showPassword, setShowPassword] = useState(false);
   const [loginMethod, setLoginMethod] = useState("phone");
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   if (!isOpen) return null;
+
+  const handleSignIn = (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setTimeout(() => {
+      setIsSubmitting(false);
+      onClose();
+      // Handle actual login success here
+    }, 2000);
+  };
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -72,7 +84,7 @@ export function SignInModal({ isOpen, onClose, onCreateAccount }) {
         </div>
 
         {/* Form */}
-        <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+        <form className="space-y-4" onSubmit={handleSignIn}>
           {loginMethod === "email" ?
           <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">
@@ -130,7 +142,11 @@ export function SignInModal({ isOpen, onClose, onCreateAccount }) {
             </button>
           </div>
 
-          <Button type="submit" className="w-full trust-button py-6 rounded-xl border-0 text-base">
+          <Button 
+            type="submit" 
+            loading={isSubmitting} 
+            className="w-full trust-button py-6 rounded-xl border-0 text-base"
+          >
             {t("signIn.signInButton")}
           </Button>
         </form>
