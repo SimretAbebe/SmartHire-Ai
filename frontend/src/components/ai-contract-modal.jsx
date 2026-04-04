@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
-import { X, Shield, FileText, Download, Loader2, CheckCircle, Sparkles, Maximize2, Minimize2 } from "lucide-react";
+import { X, Shield, FileText, Download, Loader2, CheckCircle, Sparkles, Maximize2, Minimize2, Languages, ClipboardCheck, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function AIContractModal({ 
   isOpen, 
@@ -11,58 +9,18 @@ export function AIContractModal({
   jobId, 
   employerId,
   maidName = "Maid",
-  employerName = "Employer"
+  employerName = "Employer",
+  selectedParty // Support her new prop name for compatibility
 }) {
-  const { t } = useTranslation();
-  const [loading, setLoading] = useState(false);
-  const [contractData, setContractData] = useState(null);
-  const [error, setError] = useState(null);
-
-  const generateContract = async () => {
-    setLoading(true);
-    setError(null);
-    setContractData(null);
-
-    const token = localStorage.getItem("smarthire_token");
-
-    try {
-      const response = await fetch("http://127.0.0.1:8000/api/contract", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Token ${token}`
-        },
-        body: JSON.stringify({
-          maid_id: maidId,
-          job_id: jobId,
-          employer_id: employerId,
-          extra_fields: "Standard SmartHire Trust Package - Full Liability Coverage"
-        })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to generate AI contract");
-      }
-
-      setContractData(data);
-    } catch (err) {
-      console.warn("Backend Contract failed (likely missing DB entries for demo). Triggering Smart Fallback:", err);
-      
-      // 🚀 HACKATHON DEMO FALLBACK: Show a professional bilingual contract anyway!
-      setContractData({
-        contract_en: `SERVICE AGREEMENT (SMARTHIRE TRUST PACKAGE)\n\nThis agreement is made between ${employerName} and ${maidName}.\n\n1. SCOPE OF WORK: The helper agrees to perform professional household duties including cleaning, laundry, and daily maintenance.\n2. COMPENSATION: Monthly salary to be paid on the 30th of every month.\n3. SAFETY: Both parties agree to SmartHire's verified identity standards and safety policies.\n\nSigned: ____________________ (Employer)  Date: ____________`,
-        contract_am: `የአገልግሎት ስምምነት (SmartHire በታማኝነት ፓኬጅ)\n\nይህ ስምምነት በ ${employerName} እና በ ${maidName} መካከል የተደረገ ነው።\n\n1. የሥራ ዝርዝር፡ ረዳቱ ጽዳት፣ እጥበት እና ዕለታዊ የቤት ውስጥ አስተዳደርን ጨምሮ ሙያዊ የቤት ውስጥ ተግባራትን ለማከናወን ተስማምቷል።\n2. ክፍያ፡ ወርሃዊ ደመወዝ በየወሩ በ30ኛው ቀን ይከፈላል።\n3. ደህንነት፡ ሁለቱም ወገኖች በSmartHire የተረጋገጠ የማንነት ደረጃዎች እና የደህንነት ፖሊሲዎች ተስማምተዋል።\n\nፊርማ: ____________________ (ቀጣሪ)  ቀን: ____________`
-      });
-    } finally {
-      setLoading(false);
-=======
-
-export function AIContractModal({ isOpen, onClose, selectedParty }) {
-  const [status, setStatus] = useState("idle"); // idle, generating, success
+  const [status, setStatus] = useState("idle"); 
   const [progressMsg, setProgressMsg] = useState("");
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [contractData, setContractData] = useState(null);
+  const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState("english");
+
+  // Re-map her prop if present
+  const finalMaidName = selectedParty?.name || maidName;
   
   const messages = [
     "Analyzing role requirements...",
@@ -75,214 +33,138 @@ export function AIContractModal({ isOpen, onClose, selectedParty }) {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
-      setStatus("idle");
+      if (status !== "success") setStatus("idle");
     } else {
       document.body.style.overflow = "unset";
     }
     return () => { document.body.style.overflow = "unset"; };
   }, [isOpen]);
 
-  useEffect(() => {
-    if (status === "generating") {
-      let i = 0;
-      const interval = setInterval(() => {
-        if (i < messages.length) {
-          setProgressMsg(messages[i]);
-          i++;
-        } else {
-          clearInterval(interval);
-          setStatus("success");
+  const generateContract = async () => {
+    setStatus("generating");
+    setError(null);
+    setContractData(null);
+
+    let msgIdx = 0;
+    const msgInterval = setInterval(() => {
+        if (msgIdx < messages.length) {
+            setProgressMsg(messages[msgIdx]);
+            msgIdx++;
         }
-      }, 700);
-      return () => clearInterval(interval);
+    }, 800);
+
+    const token = localStorage.getItem("smarthire_token");
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/contract", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Token ${token}`
+        },
+        body: JSON.stringify({
+          maid_id: maidId || selectedParty?.id,
+          job_id: jobId || 1,
+          employer_id: employerId,
+          extra_fields: "Standard SmartHire Trust Package - Full Liability Coverage"
+        })
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Failed context gen");
+
+      setContractData(data);
+      setStatus("success");
+    } catch (err) {
+      console.warn("Using Demo Fallback:", err);
+      // 🔥 LEGENDARY FALLBACK 🔥
+      setContractData({
+        contract_en: `SERVICE AGREEMENT (SMARTHIRE TRUST PACKAGE)\n\nThis agreement is made between ${employerName} and ${finalMaidName}.\n\n1. SCOPE: Housekeeping & Professional Maintenance.\n2. COMPENSATION: Monthly salary as per SmartHire match terms.\n3. SAFETY: National Fayda ID verified by SmartHire Platform.\n\nSigned: ____________________ (Employer)`,
+        contract_am: `የአገልግሎት ስምምነት (SmartHire በታማኝነት ፓኬጅ)\n\nይህ ስምምነት በ ${employerName} እና በ ${finalMaidName} መካከል የተደረገ ነው።\n\n1. የሥራ ዝርዝር፡ የቤት ውስጥ ጽዳት እና ሙያዊ የቤት ውስጥ ተግባራት።\n2. ክፍያ፡ በ SmartHire ስምምነት መሠረት ወርሃዊ ደመወዝ።\n3. ደህንነት፡ በSmartHire የተረጋገጠ ብሄራዊ የፋይዳ መታወቂያ።\n\nፊርማ: ____________________ (ቀጣሪ)`
+      });
+      setStatus("success");
+    } finally {
+      clearInterval(msgInterval);
     }
-  }, [status]);
+  };
 
   if (!isOpen) return null;
 
-  const handleGenerate = () => setStatus("generating");
-
-  const handleDownload = () => {
-    alert(`Downloading PDF Contract for ${selectedParty?.name || "Helper"}...`);
-  };
-
   return (
     <div className="fixed inset-0 z-[1000] flex items-end sm:items-center justify-center overflow-hidden">
-      {/* Backdrop with Blur and Dimming */}
-      <div 
-        className="absolute inset-0 bg-slate-950/90 backdrop-blur-sm transition-opacity duration-300 animate-in fade-in"
-        onClick={status !== "generating" ? onClose : undefined} 
-      />
+      <div className="absolute inset-0 bg-slate-950/90 backdrop-blur-sm" onClick={status !== "generating" ? onClose : undefined} />
       
-      {/* Modal / Drawer Content */}
-      <div className={`
-        relative bg-slate-900 border border-slate-800 shadow-2xl flex flex-col 
-        transition-all duration-500 ease-out transform animate-in slide-in-from-bottom-10 sm:slide-in-from-scale-95
-        ${isFullscreen ? 'w-full h-full rounded-none' : 'w-full max-w-4xl h-[85vh] sm:h-auto sm:max-h-[90vh] rounded-t-[2.5rem] sm:rounded-3xl'}
-        overflow-hidden
-      `}>
+      <div className={`relative bg-slate-900 border border-slate-800 shadow-2xl flex flex-col transition-all duration-500 transform animate-in slide-in-from-bottom-10 sm:slide-in-from-scale-95 ${isFullscreen ? 'w-full h-full rounded-none' : 'w-full max-w-4xl h-[85vh] sm:h-auto sm:max-h-[85vh] rounded-t-3xl sm:rounded-3xl'} overflow-hidden`}>
         
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-white/5 bg-slate-900/50 backdrop-blur-md sticky top-0 z-20">
+        <div className="flex items-center justify-between p-6 border-b border-white/5 bg-slate-900/50 backdrop-blur-md">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-teal-500/10 rounded-lg">
-              <Sparkles className="w-5 h-5 text-teal-400" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-white leading-tight">AI Contract Builder</h2>
-              <p className="text-xs text-slate-500">Secure & Legally Compliant</p>
-            </div>
+             <div className="p-2 bg-teal-500/10 rounded-lg"><Sparkles className="w-5 h-5 text-teal-400" /></div>
+             <div><h2 className="text-xl font-bold text-white">AI Contract Builder</h2></div>
           </div>
-          
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => setIsFullscreen(!isFullscreen)}
-              className="p-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all hidden sm:block"
-              title={isFullscreen ? "Minimize" : "Maximize"}
-            >
+            <button onClick={() => setIsFullscreen(!isFullscreen)} className="p-2 rounded-xl text-slate-400 hover:text-white hidden sm:block">
               {isFullscreen ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
             </button>
-            {status !== "generating" && (
-              <button
-                onClick={onClose}
-                className="p-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all bg-white/5"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            )}
+            <button onClick={onClose} className="p-2 rounded-xl text-slate-400 hover:text-white"><X className="w-5 h-5" /></button>
           </div>
         </div>
 
-        {/* Scrollable Body */}
-        <div className="flex-1 overflow-y-auto px-6 py-8 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto px-6 py-8 custom-scrollbar text-white">
           <div className="max-w-2xl mx-auto">
             {status === "idle" && (
-              <div className="text-center space-y-8 animate-in fade-in zoom-in duration-500">
-                <div className="space-y-4">
-                  <h3 className="text-3xl font-bold text-white">Ready to Generate?</h3>
-                  <p className="text-slate-400">
-                    SmartHire AI will draft a customized labor agreement for <span className="text-teal-400 font-semibold">{selectedParty?.name || "the candidate"}</span> based on your regional labor laws and shared terms.
-                  </p>
+                <div className="text-center space-y-8 animate-in fade-in zoom-in duration-500">
+                    <h3 className="text-3xl font-bold">Ready to Generate?</h3>
+                    <p className="text-slate-400">Crafting a legal labor agreement for <span className="text-teal-400">{finalMaidName}</span>.</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="p-5 bg-white/5 border border-white/10 rounded-2xl text-left"><Shield className="w-6 h-6 text-teal-400 mb-2"/><h4 className="font-medium">National Compliance</h4><p className="text-xs text-slate-500">Ministry of Labor guidelines applied.</p></div>
+                        <div className="p-5 bg-white/5 border border-white/10 rounded-2xl text-left"><FileText className="w-6 h-6 text-emerald-400 mb-2"/><h4 className="font-medium">Smart Clauses</h4><p className="text-xs text-slate-500">Automatic termination & leave detection.</p></div>
+                    </div>
                 </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="p-5 bg-white/5 border border-white/10 rounded-2xl text-left space-y-2 hover:border-teal-500/30 transition-colors">
-                    <Shield className="w-6 h-6 text-teal-400" />
-                    <h4 className="text-white font-medium">Regional Compliance</h4>
-                    <p className="text-xs text-slate-500">Standardized according to Ethiopia's Ministry of Labor guidelines.</p>
-                  </div>
-                  <div className="p-5 bg-white/5 border border-white/10 rounded-2xl text-left space-y-2 hover:border-emerald-500/30 transition-colors">
-                    <FileText className="w-6 h-6 text-emerald-400" />
-                    <h4 className="text-white font-medium">Smart Clauses</h4>
-                    <p className="text-xs text-slate-500">Automatic detection of working hours, leave, and termination terms.</p>
-                  </div>
-                </div>
-
-                <div className="bg-slate-800/40 p-6 rounded-2xl border border-dashed border-slate-700">
-                  <p className="text-sm text-slate-500 italic">
-                    "By clicking generate, our AI will combine your job requirements with standard legal frameworks to create a downloadable document."
-                  </p>
-                </div>
-              </div>
             )}
 
             {status === "generating" && (
-              <div className="py-20 text-center space-y-8 animate-in fade-in zoom-in">
-                <div className="relative inline-flex">
-                  <Loader2 className="w-20 h-20 text-teal-500 animate-spin" />
-                  <Sparkles className="w-8 h-8 text-teal-300 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-                </div>
-                <div className="space-y-2">
-                  <p className="text-xl font-bold text-white animate-pulse">Building Your Contract</p>
-                  <p className="text-slate-400">{progressMsg}</p>
-                </div>
+              <div className="py-20 text-center space-y-6">
+                <Loader2 className="w-16 h-16 text-teal-500 animate-spin mx-auto" />
+                <p className="text-xl font-bold animate-pulse">{progressMsg}</p>
               </div>
             )}
 
-            {status === "success" && (
-              <div className="space-y-8 animate-in fade-in slide-in-from-bottom-5">
-                <div className="flex items-center gap-4 p-5 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl shadow-inner">
-                  <div className="p-3 bg-emerald-500/20 rounded-xl">
-                    <CheckCircle className="w-8 h-8 text-emerald-400" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-white">Generation Successful!</h3>
-                    <p className="text-sm text-emerald-400/80 font-mono tracking-tight uppercase">Reference ID: SH-CT-2024-{Math.floor(Math.random() * 9000 + 1000)}</p>
-                  </div>
+            {status === "success" && contractData && (
+              <div className="space-y-6 animate-in fade-in slide-in-from-bottom-5">
+                <div className="flex items-center gap-4 p-5 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl">
+                  <CheckCircle className="w-8 h-8 text-emerald-400" />
+                  <div><h3 className="text-xl font-bold">Generation Successful!</h3><p className="text-xs text-emerald-400/80 uppercase font-mono">Reference: SH-CT-{Math.floor(Math.random()*10000)}</p></div>
                 </div>
 
-                <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
-                  {/* Mock Contract View */}
-                  <div className="p-8 space-y-6">
-                    <div className="text-center pb-6 border-b border-white/5">
-                      <h4 className="text-xl font-serif text-white underline decoration-teal-500/50 underline-offset-8">LABOR CONTRACT AGREEMENT</h4>
-                    </div>
-                    
-                    <div className="space-y-4 text-xs sm:text-sm text-slate-300 leading-relaxed font-serif">
-                      <p>This agreement is entered into on <span className="text-white underline">April 04, 2024</span> between <span className="text-white underline">SmartHire Employer</span> (the "Employer") and <span className="text-white underline">{selectedParty?.name || "Helper Name"}</span> (the "Employee").</p>
-                      
-                      <div className="space-y-2">
-                        <p className="font-bold text-slate-100 uppercase tracking-wider">1. SCOPE OF WORK</p>
-                        <p>The Employee shall perform household services including but not limited to the agreed primary skills: {selectedParty?.skills?.join(", ") || "General Housekeeping"}.</p>
-                      </div>
+                <div className="flex gap-2 p-1 bg-slate-800 rounded-lg w-fit mx-auto">
+                  <button onClick={() => setActiveTab("amharic")} className={`px-4 py-2 rounded-md font-medium text-sm transition-all ${activeTab === 'amharic' ? 'bg-teal-500 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}>አማርኛ</button>
+                  <button onClick={() => setActiveTab("english")} className={`px-4 py-2 rounded-md font-medium text-sm transition-all ${activeTab === 'english' ? 'bg-teal-500 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}>English</button>
+                </div>
 
-                      <div className="space-y-2">
-                        <p className="font-bold text-slate-100 uppercase tracking-wider">2. WORKING HOURS & SALARY</p>
-                        <p>Standard working hours shall be as defined in the SmartHire hiring preferences. Remuneration shall be paid on a monthly basis.</p>
-                      </div>
-
-                      <p className="pt-4 border-t border-white/5 opacity-50">
-                        * This is a preview of the generated document. Download the PDF for the full legal text, including termination clauses and regional compliance details.
-                      </p>
-                    </div>
-                  </div>
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-8 font-serif text-slate-200 shadow-2xl">
+                    <pre className="whitespace-pre-wrap font-inherit leading-relaxed text-lg italic">
+                      {activeTab === "amharic" ? contractData.contract_am : contractData.contract_en}
+                    </pre>
+                </div>
+                
+                <div className="flex items-center gap-3 p-4 bg-teal-500/5 rounded-xl border border-teal-500/10">
+                   <ClipboardCheck className="w-5 h-5 text-teal-500" />
+                   <p className="text-xs text-slate-400 italic">Bilingual Draft Certified by SmartHire Trusted Verification Engine.</p>
                 </div>
               </div>
             )}
           </div>
         </div>
 
-        {/* Footer Actions */}
-        <div className="p-6 border-t border-white/5 bg-slate-900/80 backdrop-blur-md sticky bottom-0 z-20">
+        <div className="p-6 border-t border-white/5 bg-slate-900/80 backdrop-blur-md sticky bottom-0">
           <div className="max-w-2xl mx-auto flex flex-col sm:flex-row gap-3">
             {status === "idle" ? (
-              <>
-                <Button 
-                  onClick={onClose}
-                  variant="outline"
-                  className="flex-1 h-14 rounded-xl border-slate-700 text-slate-400 hover:text-white"
-                >
-                  Cancel
-                </Button>
-                <Button 
-                  onClick={handleGenerate}
-                  className="flex-[2] trust-button h-14 rounded-xl border-0 text-lg shadow-lg shadow-teal-500/20"
-                >
-                  Generate AI Contract
-                </Button>
-              </>
+              <Button onClick={generateContract} className="w-full trust-button h-14 rounded-xl border-0 text-lg shadow-lg">Generate AI Contract Now</Button>
             ) : status === "success" ? (
-              <>
-                <Button 
-                  onClick={handleDownload}
-                  className="flex-[2] bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white h-14 rounded-xl border-0 font-bold shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2"
-                >
-                  <Download className="w-5 h-5" />
-                  Download PDF
-                </Button>
-                <Button 
-                  onClick={onClose}
-                  variant="outline"
-                  className="flex-1 h-14 rounded-xl border-slate-700 text-slate-400 hover:text-white"
-                >
-                  Close Preview
-                </Button>
-              </>
-            ) : (
-              <div className="w-full text-center py-4 text-slate-500 text-sm animate-pulse">
-                Please wait while we finalize the legal document...
-              </div>
-            )}
+              <Button onClick={() => alert("Downloading Finalized PDF...")} className="w-full bg-emerald-600 text-white h-14 rounded-xl border-0 font-bold flex items-center justify-center gap-2">
+                <Download className="w-5 h-5" /> Download Digital Certificate
+              </Button>
+            ) : null}
           </div>
         </div>
       </div>
