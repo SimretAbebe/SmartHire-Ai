@@ -1,9 +1,10 @@
 
 import { useState } from "react";
 import { useTranslation } from "@/lib/i18n-context";
-import { ArrowRight, Home, Briefcase, Users, BadgeCheck, Phone, Mail, MapPin, User, FileText, Building, Shield, CheckCircle, X, Search, Loader2, Star } from "lucide-react";
+import { ArrowRight, Home, Briefcase, Users, BadgeCheck, Phone, Mail, MapPin, User, FileText, Building, Shield, CheckCircle, X, Search, Loader2, Star, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { AIContractModal } from "./ai-contract-modal";
 
 
 
@@ -21,6 +22,8 @@ export function RegistrationForm({ role, onBack }) {
   const [isPhotoUploading, setIsPhotoUploading] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isContractModalOpen, setIsContractModalOpen] = useState(false);
+  const [selectedMatch, setSelectedMatch] = useState(null);
 
   const currentMaxStep = role === "employer" ? 4 : 3;
 
@@ -636,7 +639,14 @@ export function RegistrationForm({ role, onBack }) {
                         </div>
                         
                         <div className="flex items-center gap-3 mt-auto">
-                          <Button type="button" className="flex-1 bg-teal-500 hover:bg-teal-600 text-white border-0 shadow-lg shadow-teal-500/20">
+                          <Button 
+                            type="button" 
+                            onClick={() => {
+                              setSelectedMatch(match);
+                              setIsContractModalOpen(true);
+                            }}
+                            className="flex-1 bg-teal-500 hover:bg-teal-600 text-white border-0 shadow-lg shadow-teal-500/20"
+                          >
                             Hire / Contact
                           </Button>
                           <Button type="button" variant="outline" className="flex-1 border-slate-600 text-slate-300 hover:text-white hover:bg-slate-700 bg-transparent">
@@ -699,6 +709,18 @@ export function RegistrationForm({ role, onBack }) {
           </div>
         </form>
       </div>
+
+      {/* Her Missing Module: The AI Contract Generator */}
+      {selectedMatch && (
+        <AIContractModal 
+          isOpen={isContractModalOpen}
+          onClose={() => setIsContractModalOpen(false)}
+          maidId={selectedMatch.id}
+          maidName={selectedMatch.name}
+          employerName={name || "SmartHire Employer"}
+          jobId={1} // Placeholder for demo
+        />
+      )}
     </div>);
 
 }

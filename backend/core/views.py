@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.models import Token
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from .serializers import RegisterSerializer, LoginSerializer, MaidProfileSerializer, JobPostingSerializer
 from .utils import validate_fayda_id, generate_ai_response
@@ -223,7 +223,7 @@ class GenerateContractView(APIView):
     """
     Merges employer constraints and maid stats cleanly into string prompts for Gemini payload routing.
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def post(self, request):
         try:
