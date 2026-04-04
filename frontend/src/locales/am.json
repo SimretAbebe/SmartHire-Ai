@@ -168,7 +168,12 @@
     "tinVerificationTitle": "የግብር ከፋይ መለያ ቁጥር ማረጋገጫ",
     "tinVerificationDesc": "ለንግድ ማረጋገጫ እባክዎ የግብር ከፋይ መለያ ቁጥርዎን ያቅርቡ።",
     "tinNumber": "የግብር ከፋይ መለያ ቁጥር (TIN)",
-    "tinNumberPlaceholder": "ለምሳሌ፡ 0001234567"
+    "tinNumberPlaceholder": "ለምሳሌ፡ 0001234567",
+    "experience": "የቀድሞ የሥራ ልምድ",
+    "experiencePlaceholder": "ያለፉትን የሥራ ሚናዎችዎ፣ ኃላፊነቶችዎ እና የሥራ ዓመታትዎን ይንገሩን...",
+    "contractCardTitle": "በ AI የተዘጋጀ ውል",
+    "contractCardDesc": "እርስዎ በሰጡት መረጃ መሰረት ውልዎ በተሳካ ሁኔታ ተዘጋጅቷል።",
+    "downloadContract": "ውል አውርድ"
   },
   "footer": {
     "description": "በ AI ቴክኖሎጂ፣ ጥብቅ ማጣሪያ እና በፋይዳ መታወቂያ ማረጋገጫ የቅጥር ሂደትን እያዘመንን ነው። የእርስዎን ህልም ስራ ወይም ተስማሚ ሰራተኛ ዛሬ ያግኙ።",
