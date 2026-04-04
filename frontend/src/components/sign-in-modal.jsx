@@ -190,7 +190,6 @@ export function SignInModal({ isOpen, onClose, onCreateAccount }) {
           >
             {t("signIn.signInButton")}
           </Button>
-          </Button>
         </form>
 
         {/* Create Account */}
