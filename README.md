@@ -1,7 +1,5 @@
 # 🇪🇹 SmartHire AI - Secure Domestic Labor Marketplace 🚀
 
-**Winner's Choice: Hackathon 2026 Submission**
-
 SmartHire AI is a full-stack, AI-driven platform designed to revolutionize the domestic worker industry in Ethiopia. We bridge the trust gap between employers and domestic workers using **National Digital ID (Fayda)** and **Gemini 2.0 Flash AI**.
 
 ---
@@ -10,7 +8,6 @@ SmartHire AI is a full-stack, AI-driven platform designed to revolutionize the d
 
 -   🤖 **Gemini 2.0 Flash Matching**: Intelligent matching based on skills, location, and personality traits.
 -   🇪🇹 **Bilingual Smart Contracts**: Instant AI-generated labor agreements in both **Amharic and English** to ensure full legal clarity.
--   🛡️ **Bulletproof Uptime**: Our custom **Multi-API Key Rotation Engine** ensures 99.9% uptime during high-traffic hackathon judging.
 -   🆔 **Fayda ID Integration**: Native cryptographic verification of National IDs to ensure 100% verified workers.
 -   💬 **AI Helper Assistant**: Real-time help for employers to draft job descriptions and understand labor laws.
 
@@ -30,7 +27,6 @@ SmartHire AI is a full-stack, AI-driven platform designed to revolutionize the d
 
 ## 🚀 Speed-Run Demo Guide
 
-To see the "Magic moment" in 2 minutes:
 
 1.  **Start Backend**: `cd backend && python manage.py runserver`
 2.  **Start Frontend**: `cd frontend && npm run dev`
