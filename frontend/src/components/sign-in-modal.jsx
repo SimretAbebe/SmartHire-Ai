@@ -16,16 +16,15 @@ export function SignInModal({ isOpen, onClose, onCreateAccount }) {
   const [showPassword, setShowPassword] = useState(false);
   const [loginMethod, setLoginMethod] = useState("phone");
 
-  // State variables binding inputs to API Payload
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
   // Natively execute Django verification API request 
-  const handleLogin = async (e) => {
+  const handleSignIn = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setIsSubmitting(true);
     setErrorMsg("");
 
     try {
@@ -47,18 +46,19 @@ export function SignInModal({ isOpen, onClose, onCreateAccount }) {
       localStorage.setItem("smarthire_role", data.role);
       localStorage.setItem("smarthire_name", data.name);
       
+      setIsSubmitting(false);
       // Successfully authenticated
       onClose();
       // Fast refresh updates UI components
       window.location.reload(); 
     } catch (err) {
+      setIsSubmitting(false);
       setErrorMsg(err.message);
-    } finally {
-      setLoading(false);
     }
   };
 
   if (!isOpen) return null;
+
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -113,14 +113,13 @@ export function SignInModal({ isOpen, onClose, onCreateAccount }) {
           </button>
         </div>
 
-        {/* Form bound strictly to handleLogin hook */}
-        <form className="space-y-4" onSubmit={handleLogin}>
+        {/* Form bound strictly to handleSignIn hook */}
+        <form className="space-y-4" onSubmit={handleSignIn}>
           {errorMsg && (
              <div className="p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm">
                 {errorMsg}
              </div>
           )}
-
           {loginMethod === "email" ?
           <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">
@@ -184,8 +183,12 @@ export function SignInModal({ isOpen, onClose, onCreateAccount }) {
             </button>
           </div>
 
-          <Button disabled={loading} type="submit" className="w-full trust-button py-6 rounded-xl border-0 text-base">
-            {loading ? "Authenticating..." : t("signIn.signInButton")}
+          <Button 
+            type="submit" 
+            loading={isSubmitting} 
+            className="w-full trust-button py-6 rounded-xl border-0 text-base"
+          >
+            {t("signIn.signInButton")}
           </Button>
         </form>
 

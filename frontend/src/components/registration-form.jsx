@@ -16,7 +16,11 @@ export function RegistrationForm({ role, onBack }) {
   const [agreed, setAgreed] = useState(false);
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [isLoadingMatches, setIsLoadingMatches] = useState(false);
+  const [matchmakingMessage, setMatchmakingMessage] = useState("");
   const [matches, setMatches] = useState(null);
+  const [isPhotoUploading, setIsPhotoUploading] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const currentMaxStep = role === "employer" ? 4 : 3;
 
@@ -31,7 +35,9 @@ export function RegistrationForm({ role, onBack }) {
   // Natively execute Django POST /api/register request
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (step < 3) return; // Prevent raw submission during Wizard navigation
+    if (step < currentMaxStep) return; // Prevent raw submission during Wizard navigation
+    
+    setIsSubmitting(true);
     setErrorMsg("");
     
     // Convert 'helper' strictly to backends 'maid' parameter
@@ -55,9 +61,11 @@ export function RegistrationForm({ role, onBack }) {
             throw new Error(errorText);
         }
         
-        alert("Registration Verified & Successful! Please Log in.");
+        setIsSubmitting(false);
+        alert(t("registration.success") || "Registration Verified & Successful! Please Log in.");
         onBack(); // Escapes back to main UI so they can Login
     } catch(err) {
+        setIsSubmitting(false);
         setErrorMsg(err.message);
     }
   };
@@ -86,15 +94,42 @@ export function RegistrationForm({ role, onBack }) {
 
   const handleFindMatches = () => {
     setIsLoadingMatches(true);
+    setMatchmakingMessage("Scanning 50+ nearby helpers...");
+    
     setTimeout(() => {
-      setMatches([
-        { id: 1, name: "Aster T.", age: 24, experience: "5 years experience", location: "Addis Ababa", match: 98, verified: true, skills: ["Cleaning", "Cooking", "Childcare"], image: "/images/profiles/aster.png" },
-        { id: 2, name: "Mekdes A.", age: 27, experience: "3 years experience", location: "Addis Ababa", match: 92, verified: true, skills: ["Cleaning", "Laundry"], image: "/images/profiles/mekdes.png" },
-        { id: 3, name: "Helen B.", age: 22, experience: "2 years experience", location: "Bahir Dar", match: 85, verified: false, skills: ["Cooking", "Elderly Care"], image: "/images/profiles/helen.png" }
-      ]);
-      setIsLoadingMatches(false);
-    }, 1500);
+      setMatchmakingMessage("Matching skills & experience...");
+      setTimeout(() => {
+        setMatchmakingMessage("Verifying candidate availability...");
+        setTimeout(() => {
+          setMatches([
+            { id: 1, name: "Aster T.", age: 24, experience: "5 years experience", location: "Addis Ababa", match: 98, verified: true, skills: ["Cleaning", "Cooking", "Childcare"], image: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=400&h=400&fit=crop" },
+            { id: 2, name: "Mekdes A.", age: 27, experience: "3 years experience", location: "Addis Ababa", match: 92, verified: true, skills: ["Cleaning", "Laundry"], image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop" },
+            { id: 3, name: "Helen B.", age: 22, experience: "2 years experience", location: "Bahir Dar", match: 85, verified: false, skills: ["Cooking", "Elderly Care"], image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop" }
+          ]);
+          setIsLoadingMatches(false);
+        }, 1000);
+      }, 1000);
+    }, 1000);
   };
+
+  const handlePhotoUpload = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setIsPhotoUploading(true);
+      setTimeout(() => {
+        setIsPhotoUploading(false);
+      }, 2000);
+    }
+  };
+
+  const handleStep3Click = () => {
+    if (!agreed) return;
+    setIsVerifying(true);
+    setTimeout(() => {
+      setIsVerifying(false);
+      setStep(step + 1);
+    }, 2000);
+  };
+
 
   const roleConfig = {
     helper: {
@@ -255,11 +290,20 @@ export function RegistrationForm({ role, onBack }) {
                   </label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
-                    <input
-                      type="file"
-                      accept=".jpg,.jpeg,.png"
-                      className="w-full pl-11 py-2.5 bg-slate-800/50 border border-slate-700 rounded-lg text-white file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-emerald-500/10 file:text-emerald-500 hover:file:bg-emerald-500/20 transition-colors focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20" 
-                    />
+                    <div className="flex items-center gap-4">
+                      <input
+                        type="file"
+                        accept=".jpg,.jpeg,.png"
+                        onChange={handlePhotoUpload}
+                        className="flex-1 pl-11 py-2.5 bg-slate-800/50 border border-slate-700 rounded-lg text-white file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-emerald-500/10 file:text-emerald-500 hover:file:bg-emerald-500/20 transition-colors focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20" 
+                      />
+                      {isPhotoUploading && (
+                        <div className="flex items-center gap-2 text-emerald-400 text-sm animate-pulse">
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <span>Uploading...</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
@@ -537,8 +581,14 @@ export function RegistrationForm({ role, onBack }) {
 
               {isLoadingMatches && (
                 <div className="flex flex-col items-center justify-center py-12 space-y-4">
-                  <Loader2 className="w-12 h-12 text-teal-500 animate-spin" />
-                  <p className="text-teal-400 font-medium animate-pulse">Running AI Matching Algorithm...</p>
+                  <div className="relative">
+                    <Loader2 className="w-16 h-16 text-teal-500 animate-spin" />
+                    <Sparkles className="w-6 h-6 text-teal-300 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-teal-400 font-bold text-xl mb-1 animate-pulse">AI Agent Matching</p>
+                    <p className="text-slate-400 h-6 transition-all duration-500">{matchmakingMessage}</p>
+                  </div>
                 </div>
               )}
 
@@ -616,23 +666,28 @@ export function RegistrationForm({ role, onBack }) {
             <Button
               type="button"
               onClick={() => {
-                if (step === 3 && !agreed) return;
-                setStep(step + 1);
+                if (step === 3) {
+                  handleStep3Click();
+                } else {
+                  setStep(step + 1);
+                }
               }}
-              disabled={step === 3 && !agreed}
+              loading={step === 3 && isVerifying}
+              disabled={(step === 3 && !agreed) || isVerifying}
               className="flex-1 trust-button py-6 rounded-xl border-0 disabled:opacity-50 disabled:cursor-not-allowed">
               
                 {step === 3 && role === "employer" ? "Verify ID & Continue" : "Continue"}
-                <ArrowRight className="w-5 h-5 ml-2" />
+                {!isVerifying && <ArrowRight className="w-5 h-5 ml-2" />}
               </Button> :
 
             <Button
               type="submit"
-              disabled={step === 3 && !agreed}
+              loading={isSubmitting}
+              disabled={(step === 3 && !agreed) || isSubmitting}
               className="flex-1 trust-button py-6 rounded-xl border-0 disabled:opacity-50 disabled:cursor-not-allowed">
               
                 {role === "employer" && step === 4 ? "Complete Verification" : t("registration.verifyId")}
-                {role === "employer" && step === 4 ? <CheckCircle className="w-5 h-5 ml-2" /> : <BadgeCheck className="w-5 h-5 ml-2" />}
+                {!isSubmitting && (role === "employer" && step === 4 ? <CheckCircle className="w-5 h-5 ml-2" /> : <BadgeCheck className="w-5 h-5 ml-2" />)}
               </Button>
             }
           </div>
