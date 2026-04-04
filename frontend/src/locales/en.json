@@ -168,7 +168,12 @@
     "tinVerificationTitle": "TIN Number Verification",
     "tinVerificationDesc": "Please provide your Tax Identification Number for business verification.",
     "tinNumber": "TIN Number",
-    "tinNumberPlaceholder": "e.g., 0001234567"
+    "tinNumberPlaceholder": "e.g., 0001234567",
+    "experience": "Previous Work Experience",
+    "experiencePlaceholder": "Describe your past roles, responsibilities, and years of experience...",
+    "contractCardTitle": "AI-Generated Contract",
+    "contractCardDesc": "Your contract has been successfully generated based on the information you provided.",
+    "downloadContract": "Download Contract"
   },
   "footer": {
     "description": "Revolutionizing the hiring process through intelligent matching, automated screening, and seamless Fayda ID verification. Find your dream job or perfect candidate today.",

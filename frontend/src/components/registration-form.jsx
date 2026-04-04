@@ -34,6 +34,8 @@ export function RegistrationForm({ role, onBack }) {
   const [faydaId, setFaydaId] = useState("");
   const [tinNumber, setTinNumber] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const [experience, setExperience] = useState("");
+  const [showSuccessCard, setShowSuccessCard] = useState(false);
 
   // Natively execute Django POST /api/register request
   const handleSubmit = async (e) => {
@@ -47,7 +49,7 @@ export function RegistrationForm({ role, onBack }) {
     const backendRole = role === "helper" ? "maid" : role;
     
     try {
-        const payload = { name, phone, password, role: backendRole };
+        const payload = { name, phone, password, role: backendRole, experience };
         if (faydaId) payload.fayda_id = faydaId;
         if (tinNumber) payload.tin_number = tinNumber;
         
@@ -65,8 +67,12 @@ export function RegistrationForm({ role, onBack }) {
         }
         
         setIsSubmitting(false);
-        alert(t("registration.success") || "Registration Verified & Successful! Please Log in.");
-        onBack(); // Escapes back to main UI so they can Login
+        if (role !== "employer") {
+          setShowSuccessCard(true);
+        } else {
+          alert(t("registration.success") || "Registration Verified & Successful! Please Log in.");
+          onBack();
+        }
     } catch(err) {
         setIsSubmitting(false);
         setErrorMsg(err.message);
@@ -207,7 +213,49 @@ export function RegistrationForm({ role, onBack }) {
 
       {/* Form Card */}
       <div className="glass-card-solid rounded-2xl p-8">
-        <form className="space-y-6" onSubmit={handleSubmit}>
+        {showSuccessCard ? (
+          <div className="text-center space-y-6 animate-in fade-in zoom-in duration-500">
+            <div className={`mx-auto w-16 h-16 bg-${config.color}-500/10 rounded-full flex items-center justify-center mb-4`}>
+              <Sparkles className={`w-8 h-8 text-${config.color}-500`} />
+            </div>
+            <h2 className="text-2xl font-bold text-white">{t("registration.contractCardTitle")}</h2>
+            <p className="text-slate-400">
+              {t("registration.contractCardDesc")}
+            </p>
+            
+            <div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700 space-y-4">
+              <div className="flex items-center gap-3 text-left">
+                <div className={`p-2 bg-${config.color}-500/10 rounded-lg`}>
+                  <FileText className={`w-10 h-10 text-${config.color}-400`} />
+                </div>
+                <div>
+                  <p className="text-white font-medium">SmartHire_Contract_{name || "Helper"}.pdf</p>
+                  <p className="text-xs text-slate-500">AI-generated & legally-binding</p>
+                </div>
+              </div>
+              
+              <Button 
+                onClick={() => {
+                  alert("Downloading AI-generated contract... (Backend PDF API connection pending)");
+                  // window.location.href = `http://127.0.0.1:8000/api/download-contract/?name=${name}`;
+                }}
+                className={`w-full py-6 bg-${config.color}-500 hover:bg-${config.color}-600 text-white rounded-xl shadow-lg shadow-${config.color}-500/20 flex items-center justify-center gap-2 text-lg font-bold border-0`}
+              >
+                <Sparkles className="w-5 h-5" />
+                {t("registration.downloadContract")}
+              </Button>
+            </div>
+            
+            <button 
+              onClick={onBack}
+              className="text-slate-500 hover:text-white transition-colors text-sm font-medium flex items-center gap-2 mx-auto"
+            >
+              <ArrowRight className="w-4 h-4 rotate-180" />
+              Return to Homepage
+            </button>
+          </div>
+        ) : (
+          <form className="space-y-6" onSubmit={handleSubmit}>
           {errorMsg && (
             <div className="p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm whitespace-pre-wrap">
               {errorMsg}
@@ -390,6 +438,18 @@ export function RegistrationForm({ role, onBack }) {
                         </div>
                       )}
                     </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      {t("registration.experience")}
+                    </label>
+                    <textarea
+                      value={experience}
+                      onChange={(e) => setExperience(e.target.value)}
+                      placeholder={t("registration.experiencePlaceholder")}
+                      rows={4}
+                      className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/20 resize-none"
+                    />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-300 mb-2">
@@ -791,6 +851,19 @@ export function RegistrationForm({ role, onBack }) {
 
                   <div>
                     <label className="block text-sm font-medium text-slate-300 mb-2">
+                      {t("registration.experience")}
+                    </label>
+                    <textarea
+                      value={experience}
+                      onChange={(e) => setExperience(e.target.value)}
+                      placeholder={t("registration.experiencePlaceholder")}
+                      rows={4}
+                      className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 resize-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
                       {t("registration.contractPreference")}
                     </label>
                     <textarea
@@ -857,6 +930,7 @@ export function RegistrationForm({ role, onBack }) {
             }
           </div>
         </form>
+        )}
       </div>
 
       {/* AI Contract Modal */}
