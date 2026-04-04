@@ -166,7 +166,7 @@ class MatchMaidsView(APIView):
     """
     Uses Gemini AI to evaluate array mappings based on strict structural inputs securely.
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get(self, request):
         try:
