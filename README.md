@@ -43,7 +43,7 @@ To see the "Magic moment" in 2 minutes:
 
 ---
 
-## 🛡️ Reliability Features (Judge's Special)
+## 🛡️ Reliability Features
 
 If the main AI API hits a quota limit (HTTP 429), our **`SmartAIRotator`** engine:
 1.  Silently switches to the next available API key from `.env`.
@@ -52,9 +52,6 @@ If the main AI API hits a quota limit (HTTP 429), our **`SmartAIRotator`** engin
 
 ---
 
-## 👯‍♀️ The Team
--   **Fullstack & AI Architecture**: [Your Name/Handle]
--   **UI/UX Design & Frontend**: Simret Abebe
--   **Hackathon Goal**: To digitize trust in the domestic workforce.
 
-*Made with ❤️ in Addis Ababa for the 48h Hackathon.*
+
+
