@@ -3,6 +3,8 @@ import json
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 
+from django.db import connection
+from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -16,6 +18,16 @@ from .models import JobPosting, MaidProfile
 # Initialize explicit logging to safely catch errors instead of crashing natively
 logger = logging.getLogger(__name__)
 User = get_user_model()
+
+def health_check(request):
+    """
+    Simple endpoint to verify server is alive and connected to DB.
+    """
+    try:
+        connection.ensure_connection()
+        return JsonResponse({"status": "healthy", "database": "connected"})
+    except Exception as e:
+        return JsonResponse({"status": "unhealthy", "error": str(e)}, status=500)
 
 # ==========================================
 # 1. Registration View

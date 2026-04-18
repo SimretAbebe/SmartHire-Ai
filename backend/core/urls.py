@@ -2,11 +2,12 @@ from django.urls import path
 from .views import (
     RegisterView, LoginView, MaidProfileView, 
     JobPostingView, JobPostingDetailView, 
-    MatchMaidsView, GenerateContractView
+    MatchMaidsView, GenerateContractView,
+    health_check
 )
 
 urlpatterns = [
-    # Mapped natively to /api/register due to backend urls binding
+    path('health/', health_check, name='health-check'),
     path('register/', RegisterView.as_view(), name='register'),
     path('login/', LoginView.as_view(), name='login'),
     path('maid-profile/', MaidProfileView.as_view(), name='maid-profile'),
