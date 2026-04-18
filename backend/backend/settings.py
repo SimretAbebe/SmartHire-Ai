@@ -15,7 +15,8 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-default-key-for-local
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['*', '.onrender.com']
+# ALLOWED_HOSTS moved to bottom for better management
+
 
 # Application definition
 
@@ -108,20 +109,23 @@ REST_FRAMEWORK = {
     ],
 }
 
-# Step 5: CORS configuration (Optimized for Production)
-CORS_ALLOW_ALL_ORIGINS = True # Keep for Hackathon flexibility
+# Step 5: CORS configuration (Ultra-Permissive for Troubleshooting)
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
-
-# Explicitly whitelist the Vercel frontend to avoid modern browser policy drops
-CORS_ALLOWED_ORIGINS = [
-    "https://smart-hire-ai-eight.vercel.app",
-    "http://localhost:5173",
-    "http://localhost:3000",
-]
+CORS_ALLOW_HEADERS = ["*"]
+CORS_ALLOW_METHODS = ["*"]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://smart-hire-ai-eight.vercel.app",
     "https://smarthire-ai-1-klwa.onrender.com",
+]
+
+# Ensure Render and Vercel are both in allowed hosts
+ALLOWED_HOSTS = [
+    ".onrender.com",
+    "smarthire-ai-1-klwa.onrender.com",
+    "smart-hire-ai-eight.vercel.app",
+    "*"
 ]
 
 # Step 6: Load GEMINI_API_KEY from environment variables
