@@ -7,21 +7,11 @@ from .views import (
 
 urlpatterns = [
     # Mapped natively to /api/register due to backend urls binding
-    path('register', RegisterView.as_view(), name='register'),
-    # Mapped natively to /api/login
-    path('login', LoginView.as_view(), name='login'),
-    
-    # POST /api/maid-profile
-    path('maid-profile', MaidProfileView.as_view(), name='maid-profile'),
-    
-    # POST /api/job
-    path('job', JobPostingView.as_view(), name='job'),
-    # GET /api/job/<id>
-    path('job/<int:pk>', JobPostingDetailView.as_view(), name='job-detail'),
-    
-    # AI Endpoints
-    # GET /api/matches?job_id=x
-    path('matches', MatchMaidsView.as_view(), name='matches'),
-    # POST /api/contract
-    path('contract', GenerateContractView.as_view(), name='contract'),
+    path('register/', RegisterView.as_view(), name='register'),
+    path('login/', LoginView.as_view(), name='login'),
+    path('maid-profile/', MaidProfileView.as_view(), name='maid-profile'),
+    path('job/', JobPostingView.as_view(), name='job'),
+    path('job/<int:pk>/', JobPostingDetailView.as_view(), name='job-detail'),
+    path('matches/', MatchMaidsView.as_view(), name='matches'),
+    path('contract/', GenerateContractView.as_view(), name='contract'),
 ]

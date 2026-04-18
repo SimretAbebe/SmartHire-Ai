@@ -125,7 +125,7 @@ export function RegistrationForm({ role, onBack }) {
         formData.append("region", region);
         formData.append("location", `${city}, ${region}`);
 
-        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/register`, {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/register/`, {
             method: "POST",
             body: formData // Fetch automatically sets content-type for FormData
         });
