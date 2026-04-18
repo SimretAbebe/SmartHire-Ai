@@ -207,22 +207,22 @@ export function RegistrationForm({ role, onBack }) {
         {showSuccessCard ? (
           <div className="text-center space-y-6 animate-in fade-in zoom-in duration-500">
             <Sparkles className={`w-16 h-16 text-${config.color}-500 mx-auto`} />
-            <h2 className="text-2xl font-bold text-white">Profile Certified!</h2>
-            <p className="text-slate-400">Your professional identity has been verified through our AI engine.</p>
+            <h2 className="text-2xl font-bold text-white">{t("registration.profileCertified")}</h2>
+            <p className="text-slate-400">{t("registration.profileCertifiedDesc")}</p>
             <div className="p-6 bg-slate-800/50 rounded-xl border border-dashed border-slate-700 text-left">
                <div className="flex items-center gap-4 text-white">
                   <FileText className={`w-10 h-10 text-${config.color}-400`} />
                   <div>
-                    <p className="font-medium">SmartHire_Badge.pdf</p>
-                    <p className="text-xs text-slate-500 uppercase tracking-tighter">Verified Fayda ID Authenticated</p>
+                    <p className="font-medium">{t("registration.trustBadgePdf")}</p>
+                    <p className="text-xs text-slate-500 uppercase tracking-tighter">{t("registration.trustBadgeAuthenticated")}</p>
                   </div>
                </div>
                <Button onClick={() => alert("Downloading SmartHire Certification...")} className={`w-full mt-6 bg-${config.color}-500 hover:bg-${config.color}-600 text-white rounded-xl border-0 font-bold h-12 shadow-lg`}>
-                  Download Trust Badge Now
-               </Button>
+                   {t("registration.downloadTrustBadge")}
+                </Button>
             </div>
             <button onClick={onBack} className="text-slate-500 hover:text-white transition-colors text-sm font-medium flex items-center gap-2 mx-auto">
-              <ArrowRight className="w-4 h-4 rotate-180" /> Back to Home
+              <ArrowRight className="w-4 h-4 rotate-180" /> {t("roleSelection.backToHome")}
             </button>
           </div>
         ) : (
@@ -234,31 +234,31 @@ export function RegistrationForm({ role, onBack }) {
                 {role === "agent" ? (
                   <div className="space-y-6">
                     <div className="flex items-center gap-2 text-teal-400 mb-2">
-                       <Building className="w-5 h-5"/> <h4 className="font-bold">Agency Business Details</h4>
+                       <Building className="w-5 h-5"/> <h4 className="font-bold">{t("registration.agencyDetails")}</h4>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-slate-300">Agency / Business Name</label>
+                      <label className="text-sm font-medium text-slate-300">{t("registration.agencyName")}</label>
                       <div className="relative">
                         <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"/>
-                        <Input value={name} onChange={(e) => setName(e.target.value)} required placeholder="e.g. Sunshine Domestic Staffing" className="pl-10 bg-slate-800/50 border-slate-700 text-white" />
+                        <Input value={name} onChange={(e) => setName(e.target.value)} required placeholder={t("registration.agencyNamePlaceholder")} className="pl-10 bg-slate-800/50 border-slate-700 text-white" />
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                        <div className="space-y-2">
-                          <label className="text-sm font-medium text-slate-300">Office Phone</label>
-                          <Input value={phone} onChange={(e) => setPhone(e.target.value)} required placeholder="+251..." className="bg-slate-800/50 border-slate-700 text-white" />
+                          <label className="text-sm font-medium text-slate-300">{t("registration.officePhone")}</label>
+                          <Input value={phone} onChange={(e) => setPhone(e.target.value)} required placeholder={t("registration.phonePlaceholder")} className="bg-slate-800/50 border-slate-700 text-white" />
                        </div>
                        <div className="space-y-2">
-                          <label className="text-sm font-medium text-slate-300">Account Password</label>
+                          <label className="text-sm font-medium text-slate-300">{t("registration.accountPassword")}</label>
                           <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="bg-slate-800/50 border-slate-700 text-white" />
                        </div>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-slate-300">Agency Experience & Intro</label>
+                      <label className="text-sm font-medium text-slate-300">{t("registration.agencyIntro")}</label>
                       <textarea 
                         value={workDescription} onChange={(e) => setWorkDescription(e.target.value)}
                         className="w-full bg-slate-800/50 border border-slate-700 rounded-xl p-4 text-white focus:border-teal-500 transition-colors text-sm" rows={4} 
-                        placeholder="Briefly describe your agency's history and specialization..." 
+                        placeholder={t("registration.agencyIntroPlaceholder")} 
                       />
                     </div>
                   </div>
@@ -281,27 +281,27 @@ export function RegistrationForm({ role, onBack }) {
                           </div>
                         </div>
                         <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handlePhotoChange} />
-                        <p className="text-xs text-slate-500 font-medium">Upload Professional Profile Photo</p>
+                        <p className="text-xs text-slate-500 font-medium">{t("registration.profilePhoto")}</p>
                       </div>
                     )}
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2 col-span-2">
-                        <label className="text-sm font-medium text-slate-300">Full Name</label>
+                        <label className="text-sm font-medium text-slate-300">{t("registration.fullName")}</label>
                         <div className="relative">
                           <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"/>
-                          <Input value={name} onChange={(e) => setName(e.target.value)} required placeholder="Ethiopian Passport Standard" className="pl-10 bg-slate-800/50 border-slate-700 text-white" />
+                          <Input value={name} onChange={(e) => setName(e.target.value)} required placeholder={t("registration.fullNamePlaceholder")} className="pl-10 bg-slate-800/50 border-slate-700 text-white" />
                         </div>
                       </div>
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-300">Phone</label>
+                        <label className="text-sm font-medium text-slate-300">{t("registration.phone")}</label>
                         <div className="relative">
                           <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"/>
-                          <Input value={phone} onChange={(e) => setPhone(e.target.value)} required placeholder="+251-XXX-XXXX" className="pl-10 bg-slate-800/50 border-slate-700 text-white" />
+                          <Input value={phone} onChange={(e) => setPhone(e.target.value)} required placeholder={t("registration.phonePlaceholder")} className="pl-10 bg-slate-800/50 border-slate-700 text-white" />
                         </div>
                       </div>
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-300">Password</label>
+                        <label className="text-sm font-medium text-slate-300">{t("signIn.password")}</label>
                         <div className="relative">
                           <Shield className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"/>
                           <Input value={password} onChange={(e) => setPassword(e.target.value)} type="password" required className="pl-10 bg-slate-800/50 border-slate-700 text-white" />
@@ -310,8 +310,8 @@ export function RegistrationForm({ role, onBack }) {
                       {role === "helper" && (
                         <>
                           <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-300">Age</label>
-                            <div className="relative"><Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"/><Input type="number" value={age} onChange={(e) => setAge(e.target.value)} required placeholder="Years" className="pl-10 bg-slate-800/50 border-slate-700 text-white" /></div>
+                            <label className="text-sm font-medium text-slate-300">{t("registration.age")}</label>
+                            <div className="relative"><Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"/><Input type="number" value={age} onChange={(e) => setAge(e.target.value)} required placeholder={t("registration.agePlaceholder")} className="pl-10 bg-slate-800/50 border-slate-700 text-white" /></div>
                           </div>
                           <div className="space-y-2">
                             <label className="text-sm font-medium text-slate-300">Gender</label>
@@ -346,18 +346,18 @@ export function RegistrationForm({ role, onBack }) {
                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
                   {role === "agent" ? (
                     <div className="space-y-6">
-                      <div className="flex items-center gap-2 text-teal-400 mb-2"><Shield className="w-5 h-5"/> <h4 className="font-bold">Identity Verification</h4></div>
+                      <div className="flex items-center gap-2 text-teal-400 mb-2"><Shield className="w-5 h-5"/> <h4 className="font-bold">{t("registration.identityVerification")}</h4></div>
                       <div className="space-y-4 p-4 bg-slate-800/30 rounded-xl border border-slate-700">
-                        <label className="text-sm font-medium text-slate-300">12-digit Fayda ID</label>
-                        <Input value={faydaId} onChange={(e) => setFaydaId(e.target.value)} placeholder="000XXX..." className="bg-slate-800/50 border-slate-700 text-white tracking-widest text-center" />
+                        <label className="text-sm font-medium text-slate-300">{t("registration.faydaId")}</label>
+                        <Input value={faydaId} onChange={(e) => setFaydaId(e.target.value)} placeholder={t("registration.faydaIdPlaceholder")} className="bg-slate-800/50 border-slate-700 text-white tracking-widest text-center" />
                       </div>
                       <div className="space-y-4 p-4 bg-slate-800/30 rounded-xl border border-slate-700">
-                        <label className="text-sm font-medium text-slate-300">TIN Number (Tax ID)</label>
-                        <Input value={tinNumber} onChange={(e) => setTinNumber(e.target.value)} placeholder="Enter 10-digit TIN" className="bg-slate-800/50 border-slate-700 text-white" />
+                        <label className="text-sm font-medium text-slate-300">{t("registration.tinNumber")}</label>
+                        <Input value={tinNumber} onChange={(e) => setTinNumber(e.target.value)} placeholder={t("registration.tinNumberPlaceholder")} className="bg-slate-800/50 border-slate-700 text-white" />
                       </div>
                       <label className="flex items-start gap-3 cursor-pointer group">
                         <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-1 w-5 h-5 border-slate-600 rounded bg-slate-800 text-teal-500" />
-                        <span className="text-slate-400 text-sm group-hover:text-white transition-colors">By creating an account, I agree to SmartHire's trust and liability safety policies.</span>
+                        <span className="text-slate-400 text-sm group-hover:text-white transition-colors">{t("registration.trustPolicyAgreement")}</span>
                       </label>
                     </div>
                   ) : (
@@ -383,26 +383,26 @@ export function RegistrationForm({ role, onBack }) {
                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
                   {role === "agent" ? (
                     <div className="space-y-6">
-                      <div className="flex items-center gap-2 text-teal-400 mb-2"><User className="w-5 h-5"/> <h4 className="font-bold">Helper Personal Information</h4></div>
+                      <div className="flex items-center gap-2 text-teal-400 mb-2"><User className="w-5 h-5"/> <h4 className="font-bold">{t("registration.helperPersonalInfo")}</h4></div>
                       <div className="flex flex-col items-center gap-4 mb-4">
-                        <div onClick={() => fileInputRef.current.click()} className="relative w-24 h-24 rounded-full bg-slate-800 border-2 border-dashed border-slate-700 flex items-center justify-center cursor-pointer group hover:border-teal-500 transition-colors overflow-hidden">{helperPhotoPreview ? <img src={helperPhotoPreview} className="w-full h-full object-cover" alt="Preview" /> : <Camera className="w-8 h-8 text-slate-500" />}<div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"><span className="text-[10px] text-white font-bold uppercase">Helper Photo</span></div></div>
+                        <div onClick={() => fileInputRef.current.click()} className="relative w-24 h-24 rounded-full bg-slate-800 border-2 border-dashed border-slate-700 flex items-center justify-center cursor-pointer group hover:border-teal-500 transition-colors overflow-hidden">{helperPhotoPreview ? <img src={helperPhotoPreview} className="w-full h-full object-cover" alt="Preview" /> : <Camera className="w-8 h-8 text-slate-500" />}<div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"><span className="text-[10px] text-white font-bold uppercase">{t("registration.profilePhoto")}</span></div></div>
                         <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleHelperPhotoChange} />
                       </div>
                       <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2 col-span-2"><label className="text-sm font-medium text-slate-300">Helper Full Name</label><Input value={helperName} onChange={(e) => setHelperName(e.target.value)} required className="bg-slate-800/50 border-slate-700 text-white" /></div>
-                        <div className="space-y-2"><label className="text-sm font-medium text-slate-300">Phone (+251 format)</label><Input value={helperPhone} onChange={(e) => setHelperPhone(e.target.value)} required className="bg-slate-800/50 border-slate-700 text-white" /></div>
-                        <div className="space-y-2"><label className="text-sm font-medium text-slate-300">Age</label><Input type="number" value={helperAge} onChange={(e) => setHelperAge(e.target.value)} required className="bg-slate-800/50 border-slate-700 text-white" /></div>
+                        <div className="space-y-2 col-span-2"><label className="text-sm font-medium text-slate-300">{t("registration.helperFullName")}</label><Input value={helperName} onChange={(e) => setHelperName(e.target.value)} required className="bg-slate-800/50 border-slate-700 text-white" /></div>
+                        <div className="space-y-2"><label className="text-sm font-medium text-slate-300">{t("registration.helperPhone")}</label><Input value={helperPhone} onChange={(e) => setHelperPhone(e.target.value)} required className="bg-slate-800/50 border-slate-700 text-white" /></div>
+                        <div className="space-y-2"><label className="text-sm font-medium text-slate-300">{t("registration.age")}</label><Input type="number" value={helperAge} onChange={(e) => setHelperAge(e.target.value)} required className="bg-slate-800/50 border-slate-700 text-white" /></div>
                       </div>
                       <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2"><label className="text-sm font-medium text-slate-300">Region</label><select value={region} onChange={(e) => { setRegion(e.target.value); setCity(""); }} className="w-full h-10 bg-slate-800/50 border border-slate-700 rounded-lg text-white px-3 text-sm outline-none focus:border-teal-500 transition-colors appearance-none"><option value="">Select Region</option>{Object.keys(ETHIOPIAN_REGIONS).map(r => <option key={r} value={r}>{r}</option>)}</select></div>
-                        <div className="space-y-2"><label className="text-sm font-medium text-slate-300">City</label><select value={city} onChange={(e) => setCity(e.target.value)} disabled={!region} className="w-full h-10 bg-slate-800/50 border border-slate-700 rounded-lg text-white px-3 text-sm outline-none focus:border-teal-500 transition-colors disabled:opacity-50 appearance-none"><option value="">Select City</option>{(ETHIOPIAN_REGIONS[region] || []).map(c => <option key={c} value={c}>{c}</option>)}</select></div>
+                        <div className="space-y-2"><label className="text-sm font-medium text-slate-300">{t("registration.region")}</label><select value={region} onChange={(e) => { setRegion(e.target.value); setCity(""); }} className="w-full h-10 bg-slate-800/50 border border-slate-700 rounded-lg text-white px-3 text-sm outline-none focus:border-teal-500 transition-colors appearance-none"><option value="">{t("registration.location")}</option>{Object.keys(ETHIOPIAN_REGIONS).map(r => <option key={r} value={r}>{r}</option>)}</select></div>
+                        <div className="space-y-2"><label className="text-sm font-medium text-slate-300">{t("registration.city")}</label><select value={city} onChange={(e) => setCity(e.target.value)} disabled={!region} className="w-full h-10 bg-slate-800/50 border border-slate-700 rounded-lg text-white px-3 text-sm outline-none focus:border-teal-500 transition-colors disabled:opacity-50 appearance-none"><option value="">{t("registration.location")}</option>{(ETHIOPIAN_REGIONS[region] || []).map(c => <option key={c} value={c}>{c}</option>)}</select></div>
                       </div>
                     </div>
                   ) : (
                     <div className="space-y-6">
-                      <div className="p-6 bg-slate-800/80 rounded-2xl border border-dashed border-teal-500/30 flex flex-col items-center gap-4 shadow-inner"><BadgeCheck className="w-12 h-12 text-teal-400 animate-pulse" /><p className="text-center text-slate-300 text-sm italic">Verification Engine: Authenticated via Ethiopian Ministry of Justice Gateway</p></div>
-                      <Input value={faydaId} onChange={(e) => setFaydaId(e.target.value)} placeholder="12-digit National Fayda ID" className="bg-slate-800/50 border-slate-700 text-white text-center text-lg tracking-[0.2em] font-mono" />
-                      <label className="flex items-start gap-3 cursor-pointer group"><input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-1 w-5 h-5 border-slate-600 rounded bg-slate-800 text-teal-500" /><span className="text-slate-400 text-sm group-hover:text-white transition-colors">By creating an account, I agree to SmartHire's trust and liability safety policies.</span></label>
+                      <div className="p-6 bg-slate-800/80 rounded-2xl border border-dashed border-teal-500/30 flex flex-col items-center gap-4 shadow-inner"><BadgeCheck className="w-12 h-12 text-teal-400 animate-pulse" /><p className="text-center text-slate-300 text-sm italic">{t("registration.verificationEngine")}</p></div>
+                      <Input value={faydaId} onChange={(e) => setFaydaId(e.target.value)} placeholder={t("registration.faydaIdPlaceholder")} className="bg-slate-800/50 border-slate-700 text-white text-center text-lg tracking-[0.2em] font-mono" />
+                      <label className="flex items-start gap-3 cursor-pointer group"><input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-1 w-5 h-5 border-slate-600 rounded bg-slate-800 text-teal-500" /><span className="text-slate-400 text-sm group-hover:text-white transition-colors">{t("registration.trustPolicyAgreement")}</span></label>
                     </div>
                   )}
                </div>
@@ -412,12 +412,12 @@ export function RegistrationForm({ role, onBack }) {
               <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
                 {role === "agent" ? (
                   <div className="space-y-6">
-                    <div className="flex items-center gap-2 text-teal-400 mb-2"><Briefcase className="w-5 h-5"/> <h4 className="font-bold">Helper Maid Profile</h4></div>
+                    <div className="flex items-center gap-2 text-teal-400 mb-2"><Briefcase className="w-5 h-5"/> <h4 className="font-bold">{t("registration.helperProfile")}</h4></div>
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2 col-span-2"><label className="text-sm font-medium text-slate-300">Primary Skill</label><select value={primarySkill} onChange={(e) => setPrimarySkill(e.target.value)} className="w-full h-10 bg-slate-800/50 border border-slate-700 rounded-lg text-white px-3 text-sm outline-none focus:border-teal-500 transition-colors appearance-none"><option value="">Select Specialty</option>{["Nanny", "Cleaner", "Cook", "Caregiver", "Babysitting", "Elder Care"].map(s => <option key={s} value={s}>{s}</option>)}</select></div>
-                      <div className="space-y-2 col-span-2"><label className="text-sm font-medium text-slate-300">Payment Expectation (ETB)</label><Input type="number" value={salaryExpectation} onChange={(e) => setSalaryExpectation(e.target.value)} required placeholder="e.g. 5000" className="bg-slate-800/50 border-slate-700 text-white" /></div>
+                      <div className="space-y-2 col-span-2"><label className="text-sm font-medium text-slate-300">{t("registration.primarySkills")}</label><select value={primarySkill} onChange={(e) => setPrimarySkill(e.target.value)} className="w-full h-10 bg-slate-800/50 border border-slate-700 rounded-lg text-white px-3 text-sm outline-none focus:border-teal-500 transition-colors appearance-none"><option value="">{t("registration.primarySkillsPlaceholder")}</option>{["Nanny", "Cleaner", "Cook", "Caregiver", "Babysitting", "Elder Care"].map(s => <option key={s} value={s}>{s}</option>)}</select></div>
+                      <div className="space-y-2 col-span-2"><label className="text-sm font-medium text-slate-300">{t("registration.paymentExpectation")}</label><Input type="number" value={salaryExpectation} onChange={(e) => setSalaryExpectation(e.target.value)} required placeholder={t("registration.paymentExpectationPlaceholder")} className="bg-slate-800/50 border-slate-700 text-white" /></div>
                     </div>
-                    <div className="space-y-2"><label className="text-sm font-medium text-slate-300">Previous Work Experience</label><textarea value={workDescription} onChange={(e) => setWorkDescription(e.target.value)} className="w-full bg-slate-800/50 border border-slate-700 rounded-xl p-4 text-white focus:border-teal-500 transition-colors text-sm" rows={4} placeholder="Summarize past employment..." /></div>
+                    <div className="space-y-2"><label className="text-sm font-medium text-slate-300">{t("registration.experience")}</label><textarea value={workDescription} onChange={(e) => setWorkDescription(e.target.value)} className="w-full bg-slate-800/50 border border-slate-700 rounded-xl p-4 text-white focus:border-teal-500 transition-colors text-sm" rows={4} placeholder={t("registration.experiencePlaceholder")} /></div>
                   </div>
                 ) : (
                   role === "employer" && (
@@ -443,11 +443,11 @@ export function RegistrationForm({ role, onBack }) {
 
 
             <div className="flex gap-4 pt-6">
-              {step > 1 && <Button variant="ghost" type="button" onClick={() => setStep(step - 1)} className="flex-1 text-slate-400 h-14 hover:text-white">Back</Button>}
+              {step > 1 && <Button variant="ghost" type="button" onClick={() => setStep(step - 1)} className="flex-1 text-slate-400 h-14 hover:text-white">{t("registration.back")}</Button>}
               {step < currentMaxStep ? (
-                <Button type="button" onClick={() => setStep(step + 1)} disabled={step === 3 && !agreed} className={`flex-1 bg-gradient-to-br ${config.gradient} border-0 text-white h-14 rounded-2xl shadow-lg ring-offset-slate-900 focus:ring-2 focus:ring-teal-500 font-bold`}>Continue</Button>
+                <Button type="button" onClick={() => setStep(step + 1)} disabled={step === 3 && !agreed} className={`flex-1 bg-gradient-to-br ${config.gradient} border-0 text-white h-14 rounded-2xl shadow-lg ring-offset-slate-900 focus:ring-2 focus:ring-teal-500 font-bold`}>{t("registration.continue")}</Button>
               ) : (
-                <Button type="submit" loading={isSubmitting} className={`flex-1 bg-gradient-to-br ${config.gradient} border-0 text-white h-14 rounded-2xl shadow-lg font-bold`}>{role === "employer" ? "Complete Registration" : "Enter Platform"}</Button>
+                <Button type="submit" loading={isSubmitting} className={`flex-1 bg-gradient-to-br ${config.gradient} border-0 text-white h-14 rounded-2xl shadow-lg font-bold`}>{role === "employer" ? t("registration.completeRegistration") : t("registration.enterPlatform")}</Button>
               )}
             </div>
           </form>
