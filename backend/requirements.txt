@@ -7,4 +7,5 @@ dj-database-url
 gunicorn
 google-generativeai
 whitenoise
-gunicorn
+Pillow
+requests
