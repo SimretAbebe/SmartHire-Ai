@@ -49,7 +49,6 @@ export function RegistrationForm({ role, onBack }) {
   const [yearsOfExperience, setYearsOfExperience] = useState("");
   const [salaryExpectation, setSalaryExpectation] = useState("");
   const [workDescription, setWorkDescription] = useState("");
-  const [contractPreference, setContractPreference] = useState("");
 
   const [errorMsg, setErrorMsg] = useState("");
   
@@ -106,7 +105,6 @@ export function RegistrationForm({ role, onBack }) {
             formData.append("years_of_experience", yearsOfExperience);
             formData.append("work_description", workDescription);
             formData.append("salary", salaryExpectation);
-            formData.append("contract_preference", contractPreference);
         }
 
         // Agent-specific candidate data
@@ -120,7 +118,6 @@ export function RegistrationForm({ role, onBack }) {
             formData.append("helper_years_of_experience", yearsOfExperience);
             formData.append("helper_work_description", workDescription);
             formData.append("helper_salary", salaryExpectation);
-            formData.append("helper_contract_preference", contractPreference);
         }
 
         // Also capture location info for the profile
@@ -418,8 +415,7 @@ export function RegistrationForm({ role, onBack }) {
                     <div className="flex items-center gap-2 text-teal-400 mb-2"><Briefcase className="w-5 h-5"/> <h4 className="font-bold">Helper Maid Profile</h4></div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2 col-span-2"><label className="text-sm font-medium text-slate-300">Primary Skill</label><select value={primarySkill} onChange={(e) => setPrimarySkill(e.target.value)} className="w-full h-10 bg-slate-800/50 border border-slate-700 rounded-lg text-white px-3 text-sm outline-none focus:border-teal-500 transition-colors appearance-none"><option value="">Select Specialty</option>{["Nanny", "Cleaner", "Cook", "Caregiver", "Babysitting", "Elder Care"].map(s => <option key={s} value={s}>{s}</option>)}</select></div>
-                      <div className="space-y-2"><label className="text-sm font-medium text-slate-300">Payment Expectation (ETB)</label><Input type="number" value={salaryExpectation} onChange={(e) => setSalaryExpectation(e.target.value)} required className="bg-slate-800/50 border-slate-700 text-white" /></div>
-                      <div className="space-y-2"><label className="text-sm font-medium text-slate-300">Contract Preference</label><select value={contractPreference} onChange={(e) => setContractPreference(e.target.value)} className="w-full h-10 bg-slate-800/50 border border-slate-700 rounded-lg text-white px-3 text-sm outline-none focus:border-teal-500 transition-colors appearance-none"><option value="">Select Type</option><option value="live_in">Live-in</option><option value="live_out">Live-out</option><option value="both">Both</option></select></div>
+                      <div className="space-y-2 col-span-2"><label className="text-sm font-medium text-slate-300">Payment Expectation (ETB)</label><Input type="number" value={salaryExpectation} onChange={(e) => setSalaryExpectation(e.target.value)} required placeholder="e.g. 5000" className="bg-slate-800/50 border-slate-700 text-white" /></div>
                     </div>
                     <div className="space-y-2"><label className="text-sm font-medium text-slate-300">Previous Work Experience</label><textarea value={workDescription} onChange={(e) => setWorkDescription(e.target.value)} className="w-full bg-slate-800/50 border border-slate-700 rounded-xl p-4 text-white focus:border-teal-500 transition-colors text-sm" rows={4} placeholder="Summarize past employment..." /></div>
                   </div>

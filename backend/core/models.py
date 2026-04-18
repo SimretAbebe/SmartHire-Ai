@@ -73,7 +73,6 @@ class MaidProfile(models.Model):
     city = models.CharField(max_length=100, null=True, blank=True)
     region = models.CharField(max_length=100, null=True, blank=True)
     availability = models.CharField(max_length=100)
-    contract_preference = models.CharField(max_length=50, choices=(('live_in', 'Live-in'), ('live_out', 'Live-out'), ('both', 'Both')), null=True, blank=True)
     salary = models.IntegerField(default=0)
     fayda_id = models.CharField(max_length=12)
     
