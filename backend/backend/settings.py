@@ -109,7 +109,7 @@ REST_FRAMEWORK = {
     ],
 }
 
-# Step 5: CORS configuration (Ultra-Permissive for Troubleshooting)
+# Step 5: CORS configuration (Strict for Production)
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = ["*"]
@@ -119,6 +119,9 @@ CSRF_TRUSTED_ORIGINS = [
     "https://smart-hire-ai-eight.vercel.app",
     "https://smarthire-ai-1-klwa.onrender.com",
 ]
+
+# Disable APPEND_SLASH to prevent CORS issues on redirects
+APPEND_SLASH = False
 
 # Ensure Render and Vercel are both in allowed hosts
 ALLOWED_HOSTS = [

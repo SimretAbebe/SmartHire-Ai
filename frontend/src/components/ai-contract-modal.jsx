@@ -56,7 +56,7 @@ export function AIContractModal({
     const token = localStorage.getItem("smarthire_token");
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/contract`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/contract/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
