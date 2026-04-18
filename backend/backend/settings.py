@@ -72,8 +72,17 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # It defaults to SQLite if DATABASE_URL is not set
 DATABASE_URL = os.environ.get('DATABASE_URL', f"sqlite:///{BASE_DIR / 'db.sqlite3'}")
 DATABASES = {
-    'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
+    'default': dj_database_url.config(
+        default=DATABASE_URL,
+        conn_max_age=600,
+        conn_health_checks=True,
+        ssl_require=not DEBUG # Only require SSL in production (when DEBUG is False)
+    )
 }
+
+# Override for Render Postgres if SSL is mandatory even in DEBUG
+if 'render.com' in os.environ.get('RENDER_EXTERNAL_HOSTNAME', ''):
+     DATABASES['default']['OPTIONS'] = {'sslmode': 'require'}
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
