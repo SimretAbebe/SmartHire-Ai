@@ -108,8 +108,21 @@ REST_FRAMEWORK = {
     ],
 }
 
-# Step 5: CORS configuration (Allow all origins for Hackathon)
-CORS_ALLOW_ALL_ORIGINS = True
+# Step 5: CORS configuration (Optimized for Production)
+CORS_ALLOW_ALL_ORIGINS = True # Keep for Hackathon flexibility
+CORS_ALLOW_CREDENTIALS = True
+
+# Explicitly whitelist the Vercel frontend to avoid modern browser policy drops
+CORS_ALLOWED_ORIGINS = [
+    "https://smart-hire-ai-eight.vercel.app",
+    "http://localhost:5173",
+    "http://localhost:3000",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://smart-hire-ai-eight.vercel.app",
+    "https://smarthire-ai-1-klwa.onrender.com",
+]
 
 # Step 6: Load GEMINI_API_KEY from environment variables
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
