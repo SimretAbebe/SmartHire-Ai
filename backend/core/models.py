@@ -66,11 +66,14 @@ class MaidProfile(models.Model):
     
     # JSONField allows string lists like ["cleaning", "cooking"]
     skills = models.JSONField(default=list)
+    primary_skill = models.CharField(max_length=100, null=True, blank=True)
+    years_of_experience = models.PositiveIntegerField(default=0)
+    work_description = models.TextField(null=True, blank=True)
     location = models.CharField(max_length=255) # Kept for backward compatibility
     city = models.CharField(max_length=100, null=True, blank=True)
     region = models.CharField(max_length=100, null=True, blank=True)
     availability = models.CharField(max_length=100)
-    salary = models.IntegerField()
+    salary = models.IntegerField(default=0)
     fayda_id = models.CharField(max_length=12)
     
     # Logs which 'agent' entered this maid profile into the system

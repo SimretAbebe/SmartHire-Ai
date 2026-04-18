@@ -42,6 +42,14 @@ export function RegistrationForm({ role, onBack }) {
   const [photoPreview, setPhotoPreview] = useState(null);
   const [faydaId, setFaydaId] = useState("");
   const [tinNumber, setTinNumber] = useState("");
+  
+  // Skills & Experience
+  const [primarySkill, setPrimarySkill] = useState("");
+  const [secondarySkills, setSecondarySkills] = useState([]);
+  const [yearsOfExperience, setYearsOfExperience] = useState("");
+  const [salaryExpectation, setSalaryExpectation] = useState("");
+  const [workDescription, setWorkDescription] = useState("");
+
   const [errorMsg, setErrorMsg] = useState("");
 
   const currentMaxStep = role === "employer" ? 4 : 3;
@@ -75,6 +83,15 @@ export function RegistrationForm({ role, onBack }) {
         if (faydaId) formData.append("fayda_id", faydaId);
         if (tinNumber) formData.append("tin_number", tinNumber);
         
+        // Match backend logic for MaidProfile creation
+        if (backendRole === "maid") {
+            formData.append("primary_skill", primarySkill);
+            secondarySkills.forEach(s => formData.append("skills", s));
+            formData.append("years_of_experience", yearsOfExperience);
+            formData.append("work_description", workDescription);
+            formData.append("salary", salaryExpectation);
+        }
+
         // Also capture location info for the profile
         formData.append("city", city);
         formData.append("region", region);
@@ -290,9 +307,86 @@ export function RegistrationForm({ role, onBack }) {
             )}
 
             {step === 2 && (
-               <div className="space-y-4">
-                  <div className="flex items-center gap-2 text-teal-400 mb-2"><Briefcase className="w-5 h-5"/> <h4 className="font-bold">Requirements / Skills Scan</h4></div>
-                  <textarea className="w-full bg-slate-800/50 border border-slate-700 rounded-xl p-4 text-white focus:border-teal-500 transition-colors" rows={6} placeholder={role === "employer" ? "Detail your requirements..." : "List your skills, experience, and years of service..."} />
+               <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  <div className="flex items-center gap-2 text-teal-400 mb-2">
+                    <Briefcase className="w-5 h-5"/> 
+                    <h4 className="font-bold">Skills & Professional Experience</h4>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-slate-300">Primary Skill</label>
+                      <select 
+                        value={primarySkill} 
+                        onChange={(e) => setPrimarySkill(e.target.value)}
+                        className="w-full h-10 bg-slate-800/50 border border-slate-700 rounded-lg text-white px-3 text-sm outline-none focus:border-teal-500 transition-colors appearance-none"
+                      >
+                        <option value="">Select Specialty</option>
+                        {["Nanny", "Cleaner", "Cook", "Caregiver", "Driver", "Gardener"].map(s => <option key={s} value={s}>{s}</option>)}
+                      </select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-slate-300">Years of Experience</label>
+                      <div className="relative">
+                        <Star className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"/>
+                        <Input 
+                          type="number" 
+                          value={yearsOfExperience} 
+                          onChange={(e) => setYearsOfExperience(e.target.value)} 
+                          placeholder="e.g. 3" 
+                          className="pl-10 bg-slate-800/50 border-slate-700 text-white" 
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2 col-span-2">
+                      <label className="text-sm font-medium text-slate-300">Additional Skills (Select Multiple)</label>
+                      <div className="flex flex-wrap gap-2 p-3 bg-slate-800/30 rounded-xl border border-slate-700">
+                        {["Laundry", "First Aid", "Housekeeping", "Baking", "Pet Care", "Ironing"].map((skill) => {
+                          const isSelected = secondarySkills.includes(skill);
+                          return (
+                            <button
+                              key={skill}
+                              type="button"
+                              onClick={() => {
+                                if (isSelected) setSecondarySkills(secondarySkills.filter(s => s !== skill));
+                                else setSecondarySkills([...secondarySkills, skill]);
+                              }}
+                              className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all border ${isSelected ? "bg-teal-500 border-teal-400 text-white shadow-lg shadow-teal-500/20" : "bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-500"}`}
+                            >
+                              {skill}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <div className="space-y-2 col-span-2">
+                       <label className="text-sm font-medium text-slate-300">Monthly Salary Expectation (ETB)</label>
+                       <div className="relative">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs font-bold">ETB</span>
+                          <Input 
+                            type="number" 
+                            value={salaryExpectation} 
+                            onChange={(e) => setSalaryExpectation(e.target.value)} 
+                            placeholder="e.g. 5000" 
+                            className="pl-12 bg-slate-800/50 border-slate-700 text-white" 
+                          />
+                       </div>
+                    </div>
+
+                    <div className="space-y-2 col-span-2">
+                      <label className="text-sm font-medium text-slate-300">Work Description / Bio</label>
+                      <textarea 
+                        value={workDescription}
+                        onChange={(e) => setWorkDescription(e.target.value)}
+                        className="w-full bg-slate-800/50 border border-slate-700 rounded-xl p-4 text-white focus:border-teal-500 transition-colors text-sm" 
+                        rows={4} 
+                        placeholder={role === "employer" ? "Detail your requirements..." : "Describe your past experience and what kind of family you're looking for..."} 
+                      />
+                    </div>
+                  </div>
                </div>
             )}
 
