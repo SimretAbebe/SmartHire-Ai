@@ -49,16 +49,33 @@ export function RegistrationForm({ role, onBack }) {
   const [yearsOfExperience, setYearsOfExperience] = useState("");
   const [salaryExpectation, setSalaryExpectation] = useState("");
   const [workDescription, setWorkDescription] = useState("");
+  const [contractPreference, setContractPreference] = useState("");
 
   const [errorMsg, setErrorMsg] = useState("");
+  
+  // Agent-specific Helper data
+  const [helperName, setHelperName] = useState("");
+  const [helperPhone, setHelperPhone] = useState("");
+  const [helperAge, setHelperAge] = useState("");
+  const [helperGender, setHelperGender] = useState("");
+  const [helperPhoto, setHelperPhoto] = useState(null);
+  const [helperPhotoPreview, setHelperPhotoPreview] = useState(null);
 
-  const currentMaxStep = role === "employer" ? 4 : 3;
+  const currentMaxStep = (role === "employer" || role === "agent") ? 4 : 3;
 
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setProfilePhoto(file);
       setPhotoPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleHelperPhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setHelperPhoto(file);
+      setHelperPhotoPreview(URL.createObjectURL(file));
     }
   };
 
@@ -83,13 +100,27 @@ export function RegistrationForm({ role, onBack }) {
         if (faydaId) formData.append("fayda_id", faydaId);
         if (tinNumber) formData.append("tin_number", tinNumber);
         
-        // Match backend logic for MaidProfile creation
         if (backendRole === "maid") {
             formData.append("primary_skill", primarySkill);
             secondarySkills.forEach(s => formData.append("skills", s));
             formData.append("years_of_experience", yearsOfExperience);
             formData.append("work_description", workDescription);
             formData.append("salary", salaryExpectation);
+            formData.append("contract_preference", contractPreference);
+        }
+
+        // Agent-specific candidate data
+        if (role === "agent") {
+            formData.append("helper_name", helperName);
+            formData.append("helper_phone", helperPhone);
+            formData.append("helper_age", helperAge);
+            formData.append("helper_gender", helperGender);
+            if (helperPhoto) formData.append("helper_photo", helperPhoto);
+            formData.append("helper_primary_skill", primarySkill);
+            formData.append("helper_years_of_experience", yearsOfExperience);
+            formData.append("helper_work_description", workDescription);
+            formData.append("helper_salary", salaryExpectation);
+            formData.append("helper_contract_preference", contractPreference);
         }
 
         // Also capture location info for the profile
@@ -202,271 +233,218 @@ export function RegistrationForm({ role, onBack }) {
             {errorMsg && <div className="p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm overflow-hidden text-ellipsis whitespace-nowrap">{errorMsg}</div>}
             
             {step === 1 && (
-              <div className="space-y-5">
-                {/* Profile Photo Upload - Helper Only */}
-                {role === "helper" && (
-                  <div className="flex flex-col items-center gap-4 mb-6 pt-2">
-                    <div 
-                      onClick={() => fileInputRef.current.click()}
-                      className="relative w-24 h-24 rounded-full bg-slate-800 border-2 border-dashed border-slate-700 flex items-center justify-center cursor-pointer group hover:border-teal-500 transition-colors overflow-hidden"
-                    >
-                      {photoPreview ? (
-                        <img src={photoPreview} className="w-full h-full object-cover" alt="Preview" />
-                      ) : (
-                        <Camera className="w-8 h-8 text-slate-500 group-hover:text-teal-500 transition-colors" />
-                      )}
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                        <span className="text-[10px] text-white font-bold uppercase">Change</span>
+              <div className="space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                {role === "agent" ? (
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-2 text-teal-400 mb-2">
+                       <Building className="w-5 h-5"/> <h4 className="font-bold">Agency Business Details</h4>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-slate-300">Agency / Business Name</label>
+                      <div className="relative">
+                        <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"/>
+                        <Input value={name} onChange={(e) => setName(e.target.value)} required placeholder="e.g. Sunshine Domestic Staffing" className="pl-10 bg-slate-800/50 border-slate-700 text-white" />
                       </div>
                     </div>
-                    <input 
-                      type="file" 
-                      ref={fileInputRef} 
-                      className="hidden" 
-                      accept="image/*"
-                      onChange={handlePhotoChange}
-                    />
-                    <p className="text-xs text-slate-500 font-medium">Upload Professional Profile Photo</p>
-                  </div>
-                )}
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className={`space-y-2 ${role === "helper" ? "col-span-2" : "col-span-2"}`}>
-                    <label className="text-sm font-medium text-slate-300">Full Name</label>
-                    <div className="relative">
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"/>
-                      <Input value={name} onChange={(e) => setName(e.target.value)} required placeholder="Ethiopian Passport Standard" className="pl-10 bg-slate-800/50 border-slate-700 text-white" />
+                    <div className="grid grid-cols-2 gap-4">
+                       <div className="space-y-2">
+                          <label className="text-sm font-medium text-slate-300">Office Phone</label>
+                          <Input value={phone} onChange={(e) => setPhone(e.target.value)} required placeholder="+251..." className="bg-slate-800/50 border-slate-700 text-white" />
+                       </div>
+                       <div className="space-y-2">
+                          <label className="text-sm font-medium text-slate-300">Account Password</label>
+                          <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="bg-slate-800/50 border-slate-700 text-white" />
+                       </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-slate-300">Agency Experience & Intro</label>
+                      <textarea 
+                        value={workDescription} onChange={(e) => setWorkDescription(e.target.value)}
+                        className="w-full bg-slate-800/50 border border-slate-700 rounded-xl p-4 text-white focus:border-teal-500 transition-colors text-sm" rows={4} 
+                        placeholder="Briefly describe your agency's history and specialization..." 
+                      />
                     </div>
                   </div>
+                ) : (
+                  <>
+                    {/* Profile Photo Upload - Helper Only */}
+                    {role === "helper" && (
+                      <div className="flex flex-col items-center gap-4 mb-6 pt-2">
+                        <div 
+                          onClick={() => fileInputRef.current.click()}
+                          className="relative w-24 h-24 rounded-full bg-slate-800 border-2 border-dashed border-slate-700 flex items-center justify-center cursor-pointer group hover:border-teal-500 transition-colors overflow-hidden"
+                        >
+                          {photoPreview ? (
+                            <img src={photoPreview} className="w-full h-full object-cover" alt="Preview" />
+                          ) : (
+                            <Camera className="w-8 h-8 text-slate-500 group-hover:text-teal-500 transition-colors" />
+                          )}
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                            <span className="text-[10px] text-white font-bold uppercase">Change</span>
+                          </div>
+                        </div>
+                        <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handlePhotoChange} />
+                        <p className="text-xs text-slate-500 font-medium">Upload Professional Profile Photo</p>
+                      </div>
+                    )}
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-300">Phone</label>
-                    <div className="relative">
-                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"/>
-                      <Input value={phone} onChange={(e) => setPhone(e.target.value)} required placeholder="+251-XXX-XXXX" className="pl-10 bg-slate-800/50 border-slate-700 text-white" />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-300">Password</label>
-                    <div className="relative">
-                      <Shield className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"/>
-                      <Input value={password} onChange={(e) => setPassword(e.target.value)} type="password" required className="pl-10 bg-slate-800/50 border-slate-700 text-white" />
-                    </div>
-                  </div>
-
-                  {role === "helper" && (
-                    <>
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-300">Age</label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2 col-span-2">
+                        <label className="text-sm font-medium text-slate-300">Full Name</label>
                         <div className="relative">
-                          <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"/>
-                          <Input type="number" value={age} onChange={(e) => setAge(e.target.value)} required placeholder="Years" className="pl-10 bg-slate-800/50 border-slate-700 text-white" />
+                          <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"/>
+                          <Input value={name} onChange={(e) => setName(e.target.value)} required placeholder="Ethiopian Passport Standard" className="pl-10 bg-slate-800/50 border-slate-700 text-white" />
                         </div>
                       </div>
-
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-300">Gender</label>
-                        <div className="flex gap-2">
-                          {["male", "female"].map((g) => (
-                            <button
-                              key={g}
-                              type="button"
-                              onClick={() => setGender(g)}
-                              className={`flex-1 h-10 rounded-lg border text-sm font-medium transition-all ${gender === g ? "bg-teal-500/20 border-teal-500 text-teal-400" : "bg-slate-800/50 border-slate-700 text-slate-400 hover:border-slate-600"}`}
-                            >
-                              {g.charAt(0).toUpperCase() + g.slice(1)}
-                            </button>
-                          ))}
+                        <label className="text-sm font-medium text-slate-300">Phone</label>
+                        <div className="relative">
+                          <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"/>
+                          <Input value={phone} onChange={(e) => setPhone(e.target.value)} required placeholder="+251-XXX-XXXX" className="pl-10 bg-slate-800/50 border-slate-700 text-white" />
                         </div>
                       </div>
-                    </>
-                  )}
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 mt-6">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-300">Region</label>
-                    <select 
-                      value={region} 
-                      onChange={(e) => { setRegion(e.target.value); setCity(""); }}
-                      className="w-full h-10 bg-slate-800/50 border border-slate-700 rounded-lg text-white px-3 text-sm outline-none focus:border-teal-500 transition-colors appearance-none"
-                    >
-                      <option value="">Select Region</option>
-                      {Object.keys(ETHIOPIAN_REGIONS).map(r => <option key={r} value={r}>{r}</option>)}
-                    </select>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-300">City</label>
-                    <select 
-                      value={city} 
-                      onChange={(e) => setCity(e.target.value)}
-                      disabled={!region}
-                      className="w-full h-10 bg-slate-800/50 border border-slate-700 rounded-lg text-white px-3 text-sm outline-none focus:border-teal-500 transition-colors disabled:opacity-50 appearance-none"
-                    >
-                      <option value="">Select City</option>
-                      {(ETHIOPIAN_REGIONS[region] || []).map(c => <option key={c} value={c}>{c}</option>)}
-                    </select>
-                  </div>
-                </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-slate-300">Password</label>
+                        <div className="relative">
+                          <Shield className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"/>
+                          <Input value={password} onChange={(e) => setPassword(e.target.value)} type="password" required className="pl-10 bg-slate-800/50 border-slate-700 text-white" />
+                        </div>
+                      </div>
+                      {role === "helper" && (
+                        <>
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium text-slate-300">Age</label>
+                            <div className="relative"><Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"/><Input type="number" value={age} onChange={(e) => setAge(e.target.value)} required placeholder="Years" className="pl-10 bg-slate-800/50 border-slate-700 text-white" /></div>
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium text-slate-300">Gender</label>
+                            <div className="flex gap-2">
+                              {["male", "female"].map((g) => (
+                                <button key={g} type="button" onClick={() => setGender(g)} className={`flex-1 h-10 rounded-lg border text-sm font-medium transition-all ${gender === g ? "bg-teal-500/20 border-teal-500 text-teal-400" : "bg-slate-800/50 border-slate-700 text-slate-400 hover:border-slate-600"}`}>{g.charAt(0).toUpperCase() + g.slice(1)}</button>
+                               ))}
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </>
+                )}
+                
+                {role !== "agent" && (
+                   <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-slate-300">Region</label>
+                        <select value={region} onChange={(e) => { setRegion(e.target.value); setCity(""); }} className="w-full h-10 bg-slate-800/50 border border-slate-700 rounded-lg text-white px-3 text-sm outline-none focus:border-teal-500 transition-colors appearance-none"><option value="">Select Region</option>{Object.keys(ETHIOPIAN_REGIONS).map(r => <option key={r} value={r}>{r}</option>)}</select>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-slate-300">City</label>
+                        <select value={city} onChange={(e) => setCity(e.target.value)} disabled={!region} className="w-full h-10 bg-slate-800/50 border border-slate-700 rounded-lg text-white px-3 text-sm outline-none focus:border-teal-500 transition-colors disabled:opacity-50 appearance-none"><option value="">Select City</option>{(ETHIOPIAN_REGIONS[region] || []).map(c => <option key={c} value={c}>{c}</option>)}</select>
+                      </div>
+                   </div>
+                )}
               </div>
             )}
 
             {step === 2 && (
-               <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <div className="flex items-center gap-2 text-teal-400 mb-2">
-                    <Briefcase className="w-5 h-5"/> 
-                    <h4 className="font-bold">{role === "helper" ? "Skills & Professional Experience" : "Requirements / Skills Scan"}</h4>
-                  </div>
-                  
-                  {role === "helper" ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-300">Primary Skill</label>
-                        <select 
-                          value={primarySkill} 
-                          onChange={(e) => setPrimarySkill(e.target.value)}
-                          className="w-full h-10 bg-slate-800/50 border border-slate-700 rounded-lg text-white px-3 text-sm outline-none focus:border-teal-500 transition-colors appearance-none"
-                        >
-                          <option value="">Select Specialty</option>
-                          {["Nanny", "Cleaner", "Cook", "Caregiver", "Driver", "Gardener"].map(s => <option key={s} value={s}>{s}</option>)}
-                        </select>
+               <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                  {role === "agent" ? (
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-2 text-teal-400 mb-2"><Shield className="w-5 h-5"/> <h4 className="font-bold">Identity Verification</h4></div>
+                      <div className="space-y-4 p-4 bg-slate-800/30 rounded-xl border border-slate-700">
+                        <label className="text-sm font-medium text-slate-300">12-digit Fayda ID</label>
+                        <Input value={faydaId} onChange={(e) => setFaydaId(e.target.value)} placeholder="000XXX..." className="bg-slate-800/50 border-slate-700 text-white tracking-widest text-center" />
                       </div>
-
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-300">Years of Experience</label>
-                        <div className="relative">
-                          <Star className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"/>
-                          <Input 
-                            type="number" 
-                            value={yearsOfExperience} 
-                            onChange={(e) => setYearsOfExperience(e.target.value)} 
-                            placeholder="e.g. 3" 
-                            className="pl-10 bg-slate-800/50 border-slate-700 text-white" 
-                          />
-                        </div>
+                      <div className="space-y-4 p-4 bg-slate-800/30 rounded-xl border border-slate-700">
+                        <label className="text-sm font-medium text-slate-300">TIN Number (Tax ID)</label>
+                        <Input value={tinNumber} onChange={(e) => setTinNumber(e.target.value)} placeholder="Enter 10-digit TIN" className="bg-slate-800/50 border-slate-700 text-white" />
                       </div>
-
-                      <div className="space-y-2 col-span-2">
-                        <label className="text-sm font-medium text-slate-300">Additional Skills (Select Multiple)</label>
-                        <div className="flex flex-wrap gap-2 p-3 bg-slate-800/30 rounded-xl border border-slate-700">
-                          {["Laundry", "First Aid", "Housekeeping", "Baking", "Pet Care", "Ironing"].map((skill) => {
-                            const isSelected = secondarySkills.includes(skill);
-                            return (
-                              <button
-                                key={skill}
-                                type="button"
-                                onClick={() => {
-                                  if (isSelected) setSecondarySkills(secondarySkills.filter(s => s !== skill));
-                                  else setSecondarySkills([...secondarySkills, skill]);
-                                }}
-                                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all border ${isSelected ? "bg-teal-500 border-teal-400 text-white shadow-lg shadow-teal-500/20" : "bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-500"}`}
-                              >
-                                {skill}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-
-                      <div className="space-y-2 col-span-2">
-                         <label className="text-sm font-medium text-slate-300">Monthly Salary Expectation (ETB)</label>
-                         <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs font-bold">ETB</span>
-                            <Input 
-                              type="number" 
-                              value={salaryExpectation} 
-                              onChange={(e) => setSalaryExpectation(e.target.value)} 
-                              placeholder="e.g. 5000" 
-                              className="pl-12 bg-slate-800/50 border-slate-700 text-white" 
-                            />
-                         </div>
-                      </div>
-
-                      <div className="space-y-2 col-span-2">
-                        <label className="text-sm font-medium text-slate-300">Work Description / Bio</label>
-                        <textarea 
-                          value={workDescription}
-                          onChange={(e) => setWorkDescription(e.target.value)}
-                          className="w-full bg-slate-800/50 border border-slate-700 rounded-xl p-4 text-white focus:border-teal-500 transition-colors text-sm" 
-                          rows={4} 
-                          placeholder="Describe your past experience and what kind of family you're looking for..." 
-                        />
-                      </div>
+                      <label className="flex items-start gap-3 cursor-pointer group">
+                        <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-1 w-5 h-5 border-slate-600 rounded bg-slate-800 text-teal-500" />
+                        <span className="text-slate-400 text-sm group-hover:text-white transition-colors">By creating an account, I agree to SmartHire's trust and liability safety policies.</span>
+                      </label>
                     </div>
                   ) : (
-                    <div className="space-y-4">
-                       <textarea 
-                         value={workDescription}
-                         onChange={(e) => setWorkDescription(e.target.value)}
-                         className="w-full bg-slate-800/50 border border-slate-700 rounded-xl p-4 text-white focus:border-teal-500 transition-colors" 
-                         rows={6} 
-                         placeholder={role === "employer" ? "Detail your requirements for the AI scan..." : "Describe the domestic workers you intend to register..."} 
-                       />
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-2 text-teal-400 mb-2"><Briefcase className="w-5 h-5"/> <h4 className="font-bold">{role === "helper" ? "Skills & Professional Experience" : "Requirements / Skills Scan"}</h4></div>
+                      {role === "helper" ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div className="space-y-2"><label className="text-sm font-medium text-slate-300">Primary Skill</label><select value={primarySkill} onChange={(e) => setPrimarySkill(e.target.value)} className="w-full h-10 bg-slate-800/50 border border-slate-700 rounded-lg text-white px-3 text-sm outline-none focus:border-teal-500 transition-colors appearance-none"><option value="">Select Specialty</option>{["Nanny", "Cleaner", "Cook", "Caregiver", "Driver", "Gardener"].map(s => <option key={s} value={s}>{s}</option>)}</select></div>
+                          <div className="space-y-2"><label className="text-sm font-medium text-slate-300">Years of Experience</label><div className="relative"><Star className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"/><Input type="number" value={yearsOfExperience} onChange={(e) => setYearsOfExperience(e.target.value)} placeholder="e.g. 3" className="pl-10 bg-slate-800/50 border-slate-700 text-white" /></div></div>
+                          <div className="space-y-2 col-span-2"><label className="text-sm font-medium text-slate-300">Additional Skills (Select Multiple)</label><div className="flex flex-wrap gap-2 p-3 bg-slate-800/30 rounded-xl border border-slate-700">{["Laundry", "First Aid", "Housekeeping", "Baking", "Pet Care", "Ironing"].map((skill) => { const isSelected = secondarySkills.includes(skill); return (<button key={skill} type="button" onClick={() => { if (isSelected) setSecondarySkills(secondarySkills.filter(s => s !== skill)); else setSecondarySkills([...secondarySkills, skill]); }} className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all border ${isSelected ? "bg-teal-500 border-teal-400 text-white" : "bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-500"}`}>{skill}</button>); })}</div></div>
+                          <div className="space-y-2 col-span-2"><label className="text-sm font-medium text-slate-300">Monthly Salary Expectation (ETB)</label><div className="relative"><span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs font-bold">ETB</span><Input type="number" value={salaryExpectation} onChange={(e) => setSalaryExpectation(e.target.value)} placeholder="e.g. 5000" className="pl-12 bg-slate-800/50 border-slate-700 text-white" /></div></div>
+                          <div className="space-y-2 col-span-2"><label className="text-sm font-medium text-slate-300">Work Description / Bio</label><textarea value={workDescription} onChange={(e) => setWorkDescription(e.target.value)} className="w-full bg-slate-800/50 border border-slate-700 rounded-xl p-4 text-white focus:border-teal-500 transition-colors text-sm" rows={4} placeholder="Describe your past experience..." /></div>
+                        </div>
+                      ) : (
+                        <textarea value={workDescription} onChange={(e) => setWorkDescription(e.target.value)} className="w-full bg-slate-800/50 border border-slate-700 rounded-xl p-4 text-white focus:border-teal-500 transition-colors" rows={6} placeholder={role === "employer" ? "Detail your requirements..." : "Describe the workers..."} />
+                      )}
                     </div>
                   )}
                </div>
             )}
 
             {step === 3 && (
-              <div className="space-y-6">
-                <div className="p-6 bg-slate-800/80 rounded-2xl border border-dashed border-teal-500/30 flex flex-col items-center gap-4 shadow-inner">
-                  <BadgeCheck className="w-12 h-12 text-teal-400 animate-pulse" />
-                  <p className="text-center text-slate-300 text-sm italic">Verification Engine: Authenticated via Ethiopian Ministry of Justice Gateway</p>
-                </div>
-                <div className="space-y-4">
-                  <label className="text-sm font-medium text-slate-300">National Fayda ID</label>
-                  <Input value={faydaId} onChange={(e) => setFaydaId(e.target.value)} placeholder="12-digit ID Number" className="bg-slate-800/50 border-slate-700 text-white text-center text-lg tracking-[0.2em] font-mono" />
-                  
-                  {role === "agent" && (
-                    <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
-                       <label className="text-sm font-medium text-slate-300">TIN Number (Business Verification)</label>
-                       <div className="relative">
-                          <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"/>
-                          <Input value={tinNumber} onChange={(e) => setTinNumber(e.target.value)} required placeholder="10-digit TIN" className="pl-10 bg-slate-800/50 border-slate-700 text-white" />
-                       </div>
+               <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                  {role === "agent" ? (
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-2 text-teal-400 mb-2"><User className="w-5 h-5"/> <h4 className="font-bold">Helper Personal Information</h4></div>
+                      <div className="flex flex-col items-center gap-4 mb-4">
+                        <div onClick={() => fileInputRef.current.click()} className="relative w-24 h-24 rounded-full bg-slate-800 border-2 border-dashed border-slate-700 flex items-center justify-center cursor-pointer group hover:border-teal-500 transition-colors overflow-hidden">{helperPhotoPreview ? <img src={helperPhotoPreview} className="w-full h-full object-cover" alt="Preview" /> : <Camera className="w-8 h-8 text-slate-500" />}<div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"><span className="text-[10px] text-white font-bold uppercase">Helper Photo</span></div></div>
+                        <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleHelperPhotoChange} />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2 col-span-2"><label className="text-sm font-medium text-slate-300">Helper Full Name</label><Input value={helperName} onChange={(e) => setHelperName(e.target.value)} required className="bg-slate-800/50 border-slate-700 text-white" /></div>
+                        <div className="space-y-2"><label className="text-sm font-medium text-slate-300">Phone (+251 format)</label><Input value={helperPhone} onChange={(e) => setHelperPhone(e.target.value)} required className="bg-slate-800/50 border-slate-700 text-white" /></div>
+                        <div className="space-y-2"><label className="text-sm font-medium text-slate-300">Age</label><Input type="number" value={helperAge} onChange={(e) => setHelperAge(e.target.value)} required className="bg-slate-800/50 border-slate-700 text-white" /></div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2"><label className="text-sm font-medium text-slate-300">Region</label><select value={region} onChange={(e) => { setRegion(e.target.value); setCity(""); }} className="w-full h-10 bg-slate-800/50 border border-slate-700 rounded-lg text-white px-3 text-sm outline-none focus:border-teal-500 transition-colors appearance-none"><option value="">Select Region</option>{Object.keys(ETHIOPIAN_REGIONS).map(r => <option key={r} value={r}>{r}</option>)}</select></div>
+                        <div className="space-y-2"><label className="text-sm font-medium text-slate-300">City</label><select value={city} onChange={(e) => setCity(e.target.value)} disabled={!region} className="w-full h-10 bg-slate-800/50 border border-slate-700 rounded-lg text-white px-3 text-sm outline-none focus:border-teal-500 transition-colors disabled:opacity-50 appearance-none"><option value="">Select City</option>{(ETHIOPIAN_REGIONS[region] || []).map(c => <option key={c} value={c}>{c}</option>)}</select></div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-6">
+                      <div className="p-6 bg-slate-800/80 rounded-2xl border border-dashed border-teal-500/30 flex flex-col items-center gap-4 shadow-inner"><BadgeCheck className="w-12 h-12 text-teal-400 animate-pulse" /><p className="text-center text-slate-300 text-sm italic">Verification Engine: Authenticated via Ethiopian Ministry of Justice Gateway</p></div>
+                      <Input value={faydaId} onChange={(e) => setFaydaId(e.target.value)} placeholder="12-digit National Fayda ID" className="bg-slate-800/50 border-slate-700 text-white text-center text-lg tracking-[0.2em] font-mono" />
+                      <label className="flex items-start gap-3 cursor-pointer group"><input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-1 w-5 h-5 border-slate-600 rounded bg-slate-800 text-teal-500" /><span className="text-slate-400 text-sm group-hover:text-white transition-colors">By creating an account, I agree to SmartHire's trust and liability safety policies.</span></label>
                     </div>
                   )}
-                </div>
-
-                <label className="flex items-start gap-3 cursor-pointer group">
-                  <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-1 w-5 h-5 border-slate-600 rounded bg-slate-800 text-teal-500" />
-                  <span className="text-slate-400 text-sm group-hover:text-white transition-colors">By creating an account, I agree to SmartHire's trust and liability safety policies.</span>
-                </label>
-              </div>
+               </div>
             )}
 
-            {step === 4 && role === "employer" && (
-              <div className="space-y-4">
-                {!matches && !isLoadingMatches && (
-                  <Button type="button" onClick={handleFindMatches} className="w-full bg-gradient-to-r from-teal-500 to-emerald-600 border-0 h-16 rounded-2xl font-bold text-xl shadow-xl hover:scale-[1.02] transition-transform">Run AI Match Scan</Button>
-                )}
-                {isLoadingMatches && (
-                  <div className="flex flex-col items-center py-12 space-y-4 text-white">
-                    <Loader2 className="w-16 h-16 text-teal-500 animate-spin" />
-                    <p className="text-teal-400 animate-pulse font-bold text-lg">{matchmakingMessage}</p>
+            {step === 4 && (
+              <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                {role === "agent" ? (
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-2 text-teal-400 mb-2"><Briefcase className="w-5 h-5"/> <h4 className="font-bold">Helper Maid Profile</h4></div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2 col-span-2"><label className="text-sm font-medium text-slate-300">Primary Skill</label><select value={primarySkill} onChange={(e) => setPrimarySkill(e.target.value)} className="w-full h-10 bg-slate-800/50 border border-slate-700 rounded-lg text-white px-3 text-sm outline-none focus:border-teal-500 transition-colors appearance-none"><option value="">Select Specialty</option>{["Nanny", "Cleaner", "Cook", "Caregiver", "Babysitting", "Elder Care"].map(s => <option key={s} value={s}>{s}</option>)}</select></div>
+                      <div className="space-y-2"><label className="text-sm font-medium text-slate-300">Payment Expectation (ETB)</label><Input type="number" value={salaryExpectation} onChange={(e) => setSalaryExpectation(e.target.value)} required className="bg-slate-800/50 border-slate-700 text-white" /></div>
+                      <div className="space-y-2"><label className="text-sm font-medium text-slate-300">Contract Preference</label><select value={contractPreference} onChange={(e) => setContractPreference(e.target.value)} className="w-full h-10 bg-slate-800/50 border border-slate-700 rounded-lg text-white px-3 text-sm outline-none focus:border-teal-500 transition-colors appearance-none"><option value="">Select Type</option><option value="live_in">Live-in</option><option value="live_out">Live-out</option><option value="both">Both</option></select></div>
+                    </div>
+                    <div className="space-y-2"><label className="text-sm font-medium text-slate-300">Previous Work Experience</label><textarea value={workDescription} onChange={(e) => setWorkDescription(e.target.value)} className="w-full bg-slate-800/50 border border-slate-700 rounded-xl p-4 text-white focus:border-teal-500 transition-colors text-sm" rows={4} placeholder="Summarize past employment..." /></div>
                   </div>
-                )}
-                {matches && (
-                  <div className="space-y-4 max-h-[55vh] overflow-y-auto pr-2 custom-scrollbar text-white animate-in slide-in-from-bottom-5">
-                    {matches.map(match => (
-                      <div key={match.id} className="p-5 bg-slate-800/80 border border-slate-700 rounded-2xl hover:border-teal-500 transition-all flex flex-col sm:flex-row gap-5 relative group">
-                        <span className="absolute top-4 right-4 px-3 py-1 bg-teal-500/10 text-teal-400 text-xs font-bold rounded-full border border-teal-500/20">{match.match}% Correct Match</span>
-                        <img src={match.image} className="w-20 h-20 rounded-2xl object-cover border border-slate-600 shadow-xl group-hover:scale-105 transition-transform" />
-                        <div className="flex-1">
-                          <h4 className="font-bold text-xl text-white mb-1">{match.name}</h4>
-                          <p className="text-sm text-slate-500 mb-3 font-medium uppercase tracking-tighter">{match.experience} • {match.location}</p>
-                          <div className="flex gap-2">
-                             <Button type="button" onClick={() => openContractModal(match)} className="flex-1 bg-teal-500 hover:bg-teal-600 text-white border-0 h-12 rounded-xl text-sm font-bold shadow-teal-500/10 shadow-lg">Hire & Build Contract</Button>
-                             <Button type="button" variant="outline" className="flex-1 border-slate-700 text-slate-400 hover:text-white h-12 rounded-xl text-sm bg-transparent">Profile</Button>
-                          </div>
+                ) : (
+                  role === "employer" && (
+                    <div className="space-y-4">
+                      {!matches && !isLoadingMatches && (<Button type="button" onClick={handleFindMatches} className="w-full bg-gradient-to-r from-teal-500 to-emerald-600 border-0 h-16 rounded-2xl font-bold text-xl shadow-xl hover:scale-[1.02] transition-transform">Run AI Match Scan</Button>)}
+                      {isLoadingMatches && (<div className="flex flex-col items-center py-12 space-y-4 text-white"><Loader2 className="w-16 h-16 text-teal-500 animate-spin" /><p className="text-teal-400 animate-pulse font-bold text-lg">{matchmakingMessage}</p></div>)}
+                      {matches && (
+                        <div className="space-y-4 max-h-[55vh] overflow-y-auto pr-2 custom-scrollbar text-white animate-in slide-in-from-bottom-5">
+                          {matches.map(match => (
+                            <div key={match.id} className="p-5 bg-slate-800/80 border border-slate-700 rounded-2xl hover:border-teal-500 transition-all flex flex-col sm:flex-row gap-5 relative group">
+                              <span className="absolute top-4 right-4 px-3 py-1 bg-teal-500/10 text-teal-400 text-xs font-bold rounded-full border border-teal-500/20">{match.match}% Correct Match</span>
+                              <img src={match.image} className="w-20 h-20 rounded-2xl object-cover border border-slate-600 shadow-xl group-hover:scale-105 transition-transform" />
+                              <div className="flex-1"><h4 className="font-bold text-xl text-white mb-1">{match.name}</h4><p className="text-sm text-slate-500 mb-3 font-medium uppercase tracking-tighter">{match.experience} • {match.location}</p><div className="flex gap-2"><Button type="button" onClick={() => openContractModal(match)} className="flex-1 bg-teal-500 hover:bg-teal-600 text-white border-0 h-12 rounded-xl text-sm font-bold shadow-teal-500/10 shadow-lg">Hire & Build Contract</Button><Button type="button" variant="outline" className="flex-1 border-slate-700 text-slate-400 hover:text-white h-12 rounded-xl text-sm bg-transparent">Profile</Button></div></div>
+                            </div>
+                          ))}
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                      )}
+                    </div>
+                  )
                 )}
               </div>
             )}
+
 
             <div className="flex gap-4 pt-6">
               {step > 1 && <Button variant="ghost" type="button" onClick={() => setStep(step - 1)} className="flex-1 text-slate-400 h-14 hover:text-white">Back</Button>}

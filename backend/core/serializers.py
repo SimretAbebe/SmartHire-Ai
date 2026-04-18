@@ -54,6 +54,7 @@ class RegisterSerializer(serializers.ModelSerializer):
                 'years_of_experience': request.data.get('years_of_experience', 0),
                 'work_description': request.data.get('work_description', ''),
                 'salary': request.data.get('salary', 0),
+                'contract_preference': request.data.get('contract_preference', ''),
                 'city': request.data.get('city', ''),
                 'region': request.data.get('region', ''),
                 'location': request.data.get('location', ''),
@@ -119,8 +120,8 @@ class MaidProfileSerializer(serializers.ModelSerializer):
         model = MaidProfile
         fields = [
             'id', 'user_id', 'primary_skill', 'skills', 'years_of_experience', 
-            'work_description', 'location', 'city', 'region', 'availability', 
-            'salary', 'fayda_id', 'created_by'
+            'work_description', 'contract_preference', 'location', 'city', 'region', 
+            'availability', 'salary', 'fayda_id', 'created_by'
         ]
         # Read-only because the View will explicitly assign 'created_by' from request token!
         read_only_fields = ['created_by']
