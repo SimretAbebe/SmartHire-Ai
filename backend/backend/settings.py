@@ -118,3 +118,7 @@ if not GEMINI_API_KEY or GEMINI_API_KEY == "your-gemini-api-key-here":
 
 # Custom User Model
 AUTH_USER_MODEL = 'core.User'
+
+# Media files (Profile photos, etc.)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'

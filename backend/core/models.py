@@ -34,6 +34,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone = models.CharField(max_length=20, unique=True)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
     
+    # New personal information fields
+    age = models.PositiveIntegerField(null=True, blank=True)
+    gender = models.CharField(max_length=10, choices=(('male', 'Male'), ('female', 'Female'), ('other', 'Other')), null=True, blank=True)
+    profile_photo = models.ImageField(upload_to='profile_photos/', null=True, blank=True)
+    
     # New fields strictly designated for Agent roles natively
     fayda_id = models.CharField(max_length=12, blank=True, null=True)
     tin_number = models.CharField(max_length=10, blank=True, null=True)
@@ -61,7 +66,9 @@ class MaidProfile(models.Model):
     
     # JSONField allows string lists like ["cleaning", "cooking"]
     skills = models.JSONField(default=list)
-    location = models.CharField(max_length=255)
+    location = models.CharField(max_length=255) # Kept for backward compatibility
+    city = models.CharField(max_length=100, null=True, blank=True)
+    region = models.CharField(max_length=100, null=True, blank=True)
     availability = models.CharField(max_length=100)
     salary = models.IntegerField()
     fayda_id = models.CharField(max_length=12)
@@ -70,7 +77,7 @@ class MaidProfile(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='registered_maids')
 
     def __str__(self):
-        return f"Maid Profile: {self.user.name} - {self.location}"
+        return f"Maid Profile: {self.user.name} - {self.city}, {self.region}"
 
 
 # 3. JobPosting Model

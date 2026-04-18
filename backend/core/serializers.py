@@ -12,10 +12,13 @@ class RegisterSerializer(serializers.ModelSerializer):
     # Safely allow these from arbitrary payloads natively if role != agent
     fayda_id = serializers.CharField(required=False, allow_blank=True)
     tin_number = serializers.CharField(required=False, allow_blank=True)
+    age = serializers.IntegerField(required=False, allow_null=True)
+    gender = serializers.CharField(required=False, allow_blank=True)
+    profile_photo = serializers.ImageField(required=False, allow_null=True)
 
     class Meta:
         model = User
-        fields = ('name', 'phone', 'password', 'role', 'fayda_id', 'tin_number')
+        fields = ('name', 'phone', 'password', 'role', 'fayda_id', 'tin_number', 'age', 'gender', 'profile_photo')
 
     def validate(self, data):
         role = data.get('role')
@@ -48,7 +51,10 @@ class RegisterSerializer(serializers.ModelSerializer):
             password=validated_data['password'],
             role=validated_data['role'],
             fayda_id=validated_data.get('fayda_id'),
-            tin_number=validated_data.get('tin_number')
+            tin_number=validated_data.get('tin_number'),
+            age=validated_data.get('age'),
+            gender=validated_data.get('gender'),
+            profile_photo=validated_data.get('profile_photo')
         )
         return user
 
@@ -88,7 +94,7 @@ class MaidProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MaidProfile
-        fields = ['id', 'user_id', 'skills', 'location', 'availability', 'salary', 'fayda_id', 'created_by']
+        fields = ['id', 'user_id', 'skills', 'location', 'city', 'region', 'availability', 'salary', 'fayda_id', 'created_by']
         # Read-only because the View will explicitly assign 'created_by' from request token!
         read_only_fields = ['created_by']
 

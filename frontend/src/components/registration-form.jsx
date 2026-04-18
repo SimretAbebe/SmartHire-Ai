@@ -1,20 +1,30 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useTranslation } from "@/lib/i18n-context";
-import { ArrowRight, Home, Briefcase, Users, BadgeCheck, Phone, Mail, MapPin, User, FileText, Building, Shield, CheckCircle, X, Search, Loader2, Star, Sparkles } from "lucide-react";
+import { ArrowRight, Home, Briefcase, Users, BadgeCheck, Phone, Mail, MapPin, User, FileText, Building, Shield, CheckCircle, X, Search, Loader2, Star, Sparkles, Camera, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AIContractModal } from "./ai-contract-modal";
 
+const ETHIOPIAN_REGIONS = {
+  "Addis Ababa": ["Bole", "Kirkos", "Arada", "Gullele", "Akaki", "Kolfe Keranio", "Lideta", "Yeka"],
+  "Amhara": ["Bahir Dar", "Gondar", "Dessie", "Debre Berhan", "Kombolcha"],
+  "Oromia": ["Adama", "Bishoftu", "Jimma", "Shashemene", "Nekemte"],
+  "Tigray": ["Mekelle", "Shire", "Aksum", "Adigrat"],
+  "Sidama": ["Hawassa", "Yirgalem"],
+  "SNNPR": ["Arba Minch", "Wolaita Sodo", "Hossana"],
+  "Dire Dawa": ["Dire Dawa"],
+  "Harari": ["Harar"]
+};
+
 export function RegistrationForm({ role, onBack }) {
   const { t } = useTranslation();
+  const fileInputRef = useRef(null);
+  
   const [step, setStep] = useState(1);
   const [agreed, setAgreed] = useState(false);
-  const [selectedSkills, setSelectedSkills] = useState([]);
   const [isLoadingMatches, setIsLoadingMatches] = useState(false);
   const [matchmakingMessage, setMatchmakingMessage] = useState("");
   const [matches, setMatches] = useState(null);
-  const [isPhotoUploading, setIsPhotoUploading] = useState(false);
-  const [isVerifying, setIsVerifying] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isContractModalOpen, setIsContractModalOpen] = useState(false);
   const [selectedMatch, setSelectedMatch] = useState(null);
@@ -24,11 +34,25 @@ export function RegistrationForm({ role, onBack }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [age, setAge] = useState("");
+  const [gender, setGender] = useState("");
+  const [region, setRegion] = useState("");
+  const [city, setCity] = useState("");
+  const [profilePhoto, setProfilePhoto] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState(null);
   const [faydaId, setFaydaId] = useState("");
   const [tinNumber, setTinNumber] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
   const currentMaxStep = (role === "employer" || role === "agent") ? 4 : 3;
+
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProfilePhoto(file);
+      setPhotoPreview(URL.createObjectURL(file));
+    }
+  };
 
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();
@@ -40,19 +64,30 @@ export function RegistrationForm({ role, onBack }) {
     const backendRole = role === "helper" ? "maid" : role;
     
     try {
-        const payload = { name, phone, password, role: backendRole };
-        if (faydaId) payload.fayda_id = faydaId;
-        if (tinNumber) payload.tin_number = tinNumber;
+        const formData = new FormData();
+        formData.append("name", name);
+        formData.append("phone", phone);
+        formData.append("password", password);
+        formData.append("role", backendRole);
+        if (age) formData.append("age", age);
+        if (gender) formData.append("gender", gender);
+        if (profilePhoto) formData.append("profile_photo", profilePhoto);
+        if (faydaId) formData.append("fayda_id", faydaId);
+        if (tinNumber) formData.append("tin_number", tinNumber);
         
+        // Also capture location info for the profile
+        formData.append("city", city);
+        formData.append("region", region);
+        formData.append("location", `${city}, ${region}`);
+
         const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/register`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
+            body: formData // Fetch automatically sets content-type for FormData
         });
         
         const data = await res.json();
         if (!res.ok) {
-            throw new Error(data.error || "Registration error occurred.");
+            throw new Error(data.errors ? JSON.stringify(data.errors) : (data.error || "Registration error occurred."));
         }
         
         setIsSubmitting(false);
@@ -82,11 +117,6 @@ export function RegistrationForm({ role, onBack }) {
         setIsLoadingMatches(false);
       }, 1500);
     }, 1000);
-  };
-
-  const openContractModal = (match) => {
-    setSelectedMatch(match);
-    setIsContractModalOpen(true);
   };
 
   const roleConfig = {
@@ -147,23 +177,117 @@ export function RegistrationForm({ role, onBack }) {
           </div>
         ) : (
           <form className="space-y-6" onSubmit={handleSubmit}>
-            {errorMsg && <div className="p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm">{errorMsg}</div>}
+            {errorMsg && <div className="p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm overflow-hidden text-ellipsis whitespace-nowrap">{errorMsg}</div>}
             
             {step === 1 && (
               <div className="space-y-5">
-                <label className="block text-sm font-medium text-slate-300">Name & Family History</label>
-                <div className="relative"> <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"/><Input value={name} onChange={(e) => setName(e.target.value)} required placeholder="Full Name (Ethiopian Passport Standard)" className="pl-10 bg-slate-800/50 border-slate-700 text-white" /></div>
-                <label className="block text-sm font-medium text-slate-300">Phone</label>
-                <div className="relative"> <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"/><Input value={phone} onChange={(e) => setPhone(e.target.value)} required placeholder="+251-XXX-XXXX" className="pl-10 bg-slate-800/50 border-slate-700 text-white" /></div>
-                <label className="block text-sm font-medium text-slate-300">Password</label>
-                <div className="relative"> <Shield className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"/><Input value={password} onChange={(e) => setPassword(e.target.value)} type="password" required className="pl-10 bg-slate-800/50 border-slate-700 text-white" /></div>
+                {/* Profile Photo Upload */}
+                <div className="flex flex-col items-center gap-4 mb-6">
+                  <div 
+                    onClick={() => fileInputRef.current.click()}
+                    className="relative w-24 h-24 rounded-full bg-slate-800 border-2 border-dashed border-slate-700 flex items-center justify-center cursor-pointer group hover:border-teal-500 transition-colors overflow-hidden"
+                  >
+                    {photoPreview ? (
+                      <img src={photoPreview} className="w-full h-full object-cover" alt="Preview" />
+                    ) : (
+                      <Camera className="w-8 h-8 text-slate-500 group-hover:text-teal-500 transition-colors" />
+                    )}
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                      <span className="text-[10px] text-white font-bold uppercase">Change</span>
+                    </div>
+                  </div>
+                  <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    className="hidden" 
+                    accept="image/*"
+                    onChange={handlePhotoChange}
+                  />
+                  <p className="text-xs text-slate-500 font-medium">Upload Professional Profile Photo</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2 col-span-2">
+                    <label className="text-sm font-medium text-slate-300">Full Name</label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"/>
+                      <Input value={name} onChange={(e) => setName(e.target.value)} required placeholder="Ethiopian Passport Standard" className="pl-10 bg-slate-800/50 border-slate-700 text-white" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-300">Phone</label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"/>
+                      <Input value={phone} onChange={(e) => setPhone(e.target.value)} required placeholder="+251-XXX-XXXX" className="pl-10 bg-slate-800/50 border-slate-700 text-white" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-300">Age</label>
+                    <div className="relative">
+                      <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"/>
+                      <Input type="number" value={age} onChange={(e) => setAge(e.target.value)} required placeholder="Years" className="pl-10 bg-slate-800/50 border-slate-700 text-white" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-300">Gender</label>
+                    <div className="flex gap-2">
+                      {["male", "female"].map((g) => (
+                        <button
+                          key={g}
+                          type="button"
+                          onClick={() => setGender(g)}
+                          className={`flex-1 h-10 rounded-lg border text-sm font-medium transition-all ${gender === g ? "bg-teal-500/20 border-teal-500 text-teal-400" : "bg-slate-800/50 border-slate-700 text-slate-400 hover:border-slate-600"}`}
+                        >
+                          {g.charAt(0).toUpperCase() + g.slice(1)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-300">Password</label>
+                    <div className="relative">
+                      <Shield className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"/>
+                      <Input value={password} onChange={(e) => setPassword(e.target.value)} type="password" required className="pl-10 bg-slate-800/50 border-slate-700 text-white" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 mt-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-300">Region</label>
+                    <select 
+                      value={region} 
+                      onChange={(e) => { setRegion(e.target.value); setCity(""); }}
+                      className="w-full h-10 bg-slate-800/50 border border-slate-700 rounded-lg text-white px-3 text-sm outline-none focus:border-teal-500 transition-colors appearance-none"
+                    >
+                      <option value="">Select Region</option>
+                      {Object.keys(ETHIOPIAN_REGIONS).map(r => <option key={r} value={r}>{r}</option>)}
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-300">City</label>
+                    <select 
+                      value={city} 
+                      onChange={(e) => setCity(e.target.value)}
+                      disabled={!region}
+                      className="w-full h-10 bg-slate-800/50 border border-slate-700 rounded-lg text-white px-3 text-sm outline-none focus:border-teal-500 transition-colors disabled:opacity-50 appearance-none"
+                    >
+                      <option value="">Select City</option>
+                      {(ETHIOPIAN_REGIONS[region] || []).map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
+                </div>
               </div>
             )}
 
             {step === 2 && (
                <div className="space-y-4">
-                  <div className="flex items-center gap-2 text-teal-400 mb-2"><Briefcase className="w-5 h-5"/> <h4 className="font-bold">Requirements Scan</h4></div>
-                  <textarea className="w-full bg-slate-800/50 border border-slate-700 rounded-xl p-4 text-white focus:border-teal-500 transition-colors" rows={6} placeholder="I need a household helper for professional cooking, cleaning, and occasional childcare in Addis Ababa. Experience with modern appliances required." />
+                  <div className="flex items-center gap-2 text-teal-400 mb-2"><Briefcase className="w-5 h-5"/> <h4 className="font-bold">Requirements / Skills Scan</h4></div>
+                  <textarea className="w-full bg-slate-800/50 border border-slate-700 rounded-xl p-4 text-white focus:border-teal-500 transition-colors" rows={6} placeholder={role === "employer" ? "Detail your requirements..." : "List your skills, experience, and years of service..."} />
                </div>
             )}
 
@@ -202,7 +326,7 @@ export function RegistrationForm({ role, onBack }) {
                           <h4 className="font-bold text-xl text-white mb-1">{match.name}</h4>
                           <p className="text-sm text-slate-500 mb-3 font-medium uppercase tracking-tighter">{match.experience} • {match.location}</p>
                           <div className="flex gap-2">
-                             <Button type="button" onClick={() => openContractModal(match)} className="flex-1 bg-teal-500 hover:bg-teal-600 text-white border-0 h-12 rounded-xl text-sm font-bold shadow-teal-500/10 shadow-lg">Hire & Build Contract</Button>
+                             <Button type="button" onClick={() => alert("Building Contract...")} className="flex-1 bg-teal-500 hover:bg-teal-600 text-white border-0 h-12 rounded-xl text-sm font-bold shadow-teal-500/10 shadow-lg">Hire & Build Contract</Button>
                              <Button type="button" variant="outline" className="flex-1 border-slate-700 text-slate-400 hover:text-white h-12 rounded-xl text-sm bg-transparent">Profile</Button>
                           </div>
                         </div>
@@ -216,9 +340,9 @@ export function RegistrationForm({ role, onBack }) {
             <div className="flex gap-4 pt-6">
               {step > 1 && <Button variant="ghost" type="button" onClick={() => setStep(step - 1)} className="flex-1 text-slate-400 h-14 hover:text-white">Back</Button>}
               {step < currentMaxStep ? (
-                <Button type="button" onClick={() => setStep(step + 1)} disabled={step === 3 && !agreed} className={`flex-1 bg-gradient-to-r ${config.gradient} border-0 text-white h-14 rounded-2xl shadow-lg ring-offset-slate-900 focus:ring-2 focus:ring-teal-500 font-bold`}>Continue</Button>
+                <Button type="button" onClick={() => setStep(step + 1)} disabled={step === 3 && !agreed} className={`flex-1 bg-gradient-to-br ${config.gradient} border-0 text-white h-14 rounded-2xl shadow-lg ring-offset-slate-900 focus:ring-2 focus:ring-teal-500 font-bold`}>Continue</Button>
               ) : (
-                <Button type="submit" loading={isSubmitting} className={`flex-1 bg-gradient-to-r ${config.gradient} border-0 text-white h-14 rounded-2xl shadow-lg font-bold`}>{role === "employer" ? "Complete Registration" : "Enter Platform"}</Button>
+                <Button type="submit" loading={isSubmitting} className={`flex-1 bg-gradient-to-br ${config.gradient} border-0 text-white h-14 rounded-2xl shadow-lg font-bold`}>{role === "employer" ? "Complete Registration" : "Enter Platform"}</Button>
               )}
             </div>
           </form>
@@ -233,4 +357,6 @@ export function RegistrationForm({ role, onBack }) {
       />
     </div>
   );
+}
+
 }
