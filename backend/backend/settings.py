@@ -13,7 +13,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-default-key-for-local-dev-only')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+# DEBUG flag moved to bottom for troubleshooting
+
 
 # ALLOWED_HOSTS moved to bottom for better management
 
@@ -109,11 +110,17 @@ REST_FRAMEWORK = {
     ],
 }
 
-# Step 5: CORS configuration (Strict for Production)
-CORS_ALLOW_ALL_ORIGINS = True
+# DEBUG ON FOR TROUBLESHOOTING
+DEBUG = True
+
+# Step 5: CORS configuration (Strict Production Standalone)
+CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_HEADERS = ["*"]
-CORS_ALLOW_METHODS = ["*"]
+CORS_ALLOWED_ORIGINS = [
+    "https://smart-hire-ai-eight.vercel.app",
+    "http://localhost:5173",
+    "http://localhost:3000",
+]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://smart-hire-ai-eight.vercel.app",
