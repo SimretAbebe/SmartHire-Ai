@@ -44,7 +44,7 @@ export function RegistrationForm({ role, onBack }) {
   const [tinNumber, setTinNumber] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
-  const currentMaxStep = (role === "employer" || role === "agent") ? 4 : 3;
+  const currentMaxStep = role === "employer" ? 4 : 3;
 
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
@@ -117,6 +117,11 @@ export function RegistrationForm({ role, onBack }) {
         setIsLoadingMatches(false);
       }, 1500);
     }, 1000);
+  };
+
+  const openContractModal = (match) => {
+    setSelectedMatch(match);
+    setIsContractModalOpen(true);
   };
 
   const roleConfig = {
@@ -297,7 +302,21 @@ export function RegistrationForm({ role, onBack }) {
                   <BadgeCheck className="w-12 h-12 text-teal-400 animate-pulse" />
                   <p className="text-center text-slate-300 text-sm italic">Verification Engine: Authenticated via Ethiopian Ministry of Justice Gateway</p>
                 </div>
-                <Input value={faydaId} onChange={(e) => setFaydaId(e.target.value)} placeholder="12-digit National Fayda ID" className="bg-slate-800/50 border-slate-700 text-white text-center text-lg tracking-[0.2em] font-mono" />
+                <div className="space-y-4">
+                  <label className="text-sm font-medium text-slate-300">National Fayda ID</label>
+                  <Input value={faydaId} onChange={(e) => setFaydaId(e.target.value)} placeholder="12-digit ID Number" className="bg-slate-800/50 border-slate-700 text-white text-center text-lg tracking-[0.2em] font-mono" />
+                  
+                  {role === "agent" && (
+                    <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
+                       <label className="text-sm font-medium text-slate-300">TIN Number (Business Verification)</label>
+                       <div className="relative">
+                          <Building className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"/>
+                          <Input value={tinNumber} onChange={(e) => setTinNumber(e.target.value)} required placeholder="10-digit TIN" className="pl-10 bg-slate-800/50 border-slate-700 text-white" />
+                       </div>
+                    </div>
+                  )}
+                </div>
+
                 <label className="flex items-start gap-3 cursor-pointer group">
                   <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} className="mt-1 w-5 h-5 border-slate-600 rounded bg-slate-800 text-teal-500" />
                   <span className="text-slate-400 text-sm group-hover:text-white transition-colors">By creating an account, I agree to SmartHire's trust and liability safety policies.</span>
@@ -326,7 +345,7 @@ export function RegistrationForm({ role, onBack }) {
                           <h4 className="font-bold text-xl text-white mb-1">{match.name}</h4>
                           <p className="text-sm text-slate-500 mb-3 font-medium uppercase tracking-tighter">{match.experience} • {match.location}</p>
                           <div className="flex gap-2">
-                             <Button type="button" onClick={() => alert("Building Contract...")} className="flex-1 bg-teal-500 hover:bg-teal-600 text-white border-0 h-12 rounded-xl text-sm font-bold shadow-teal-500/10 shadow-lg">Hire & Build Contract</Button>
+                             <Button type="button" onClick={() => openContractModal(match)} className="flex-1 bg-teal-500 hover:bg-teal-600 text-white border-0 h-12 rounded-xl text-sm font-bold shadow-teal-500/10 shadow-lg">Hire & Build Contract</Button>
                              <Button type="button" variant="outline" className="flex-1 border-slate-700 text-slate-400 hover:text-white h-12 rounded-xl text-sm bg-transparent">Profile</Button>
                           </div>
                         </div>
@@ -357,6 +376,4 @@ export function RegistrationForm({ role, onBack }) {
       />
     </div>
   );
-}
-
-}
+}
